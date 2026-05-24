@@ -11,19 +11,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-/* Light Blue Medical Theme */
---bg:#e8f2fb;--sf:#f0f7ff;--sf2:#daeaf8;--sf3:#cce0f5;
---bd:#b8d4ee;--bd2:#9ec4e6;
---tx:#0d2137;--tx2:#2d5680;--tx3:#5a8ab8;
---bl:#1565c0;--bl2:#0d47a1;
---tl:#00796b;--gd:#e65100;--rs:#c62828;--gn:#2e7d32;--pu:#6a1b9a;--or:#bf360c;
+/* Ultra Light Blue Medical Theme */
+--bg:#eef5fd;--sf:#ffffff;--sf2:#e0eefc;--sf3:#d0e6fa;
+--bd:#b3d4f5;--bd2:#90bfee;
+--tx:#0a1929;--tx2:#1e4976;--tx3:#4a7ab5;
+--bl:#0277bd;--bl2:#01579b;
+--tl:#00695c;--gd:#e65100;--rs:#b71c1c;--gn:#1b5e20;--pu:#4a148c;--or:#bf360c;
 --sw:260px;--th:60px;--bh:64px;
 --sit:env(safe-area-inset-top,0px);--sib:env(safe-area-inset-bottom,0px);
-/* Shadows */
---shadow-sm:0 1px 4px rgba(21,101,192,.15);
---shadow-md:0 4px 16px rgba(21,101,192,.2);
---shadow-lg:0 8px 32px rgba(21,101,192,.25);
-/* Radius */
+--shadow-sm:0 1px 4px rgba(2,119,189,.12);
+--shadow-md:0 4px 16px rgba(2,119,189,.18);
+--shadow-lg:0 8px 32px rgba(2,119,189,.22);
 --r-sm:8px;--r-md:14px;--r-lg:20px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -210,7 +208,7 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 .lerr{background:rgba(240,92,122,.1);border:1px solid rgba(240,92,122,.28);border-radius:8px;padding:8px 12px;color:var(--rs);font-size:12px;margin-bottom:12px;display:none}
 .lerr.on{display:block}
 /* LOGIN */
-#LS{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:600;padding:16px;background-image:radial-gradient(ellipse at 30% 20%,rgba(29,111,164,.12),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(13,148,136,.06),transparent 50%)}
+#LS{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:600;padding:16px;background-image:radial-gradient(ellipse at 30% 20%,rgba(2,119,189,.15),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(2,136,209,.08),transparent 50%)}
 #LS.on{display:flex}
 .lcard{background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:30px 26px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .llogo{text-align:center;margin-bottom:24px}
@@ -305,7 +303,7 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 /* Improved nav items */
 .nv{padding:9px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;border-radius:var(--r-sm);margin:2px 8px;transition:all .15s}
 .nv:hover{background:var(--sf2)}
-.nv.on{background:rgba(21,101,192,.2);color:var(--bl);font-weight:600}
+.nv.on{background:rgba(2,119,189,.15);color:var(--bl);font-weight:600}
 
 /* Improved input fields */
 input,select,textarea{border-radius:var(--r-sm);border:1.5px solid var(--bd);background:var(--sf2);color:var(--tx);padding:10px 12px;font-size:14px;font-family:'Roboto',sans-serif;transition:border-color .2s,box-shadow .2s;width:100%}
@@ -494,7 +492,7 @@ function registerServiceWorker(){
     <!-- Logo + Brand -->
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:80px;height:80px;margin:0 auto 16px;filter:drop-shadow(0 8px 24px rgba(29,111,164,.5))">
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#1565c0'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#0277bd'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
       </div>
       <h1 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#fff,#7dbeff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">MedEscala</h1>
       <p style="color:var(--tx3);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">UPA Pediátrica · João Pessoa / PB</p>
@@ -528,7 +526,7 @@ function registerServiceWorker(){
       <label class="fl">Senha (número do CRM)</label>
       <input type="password" id="LIP" placeholder="Ex: 11707" autocomplete="current-password" inputmode="numeric" style="background:rgba(255,255,255,.06)">
     </div>
-    <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#0d47a1,#1565c0);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
+    <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#01579b,#0277bd);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
     <button id="BIOBTN" onclick="tryBiometricLogin()" style="display:none;width:100%;justify-content:center;padding:11px;margin-bottom:10px;background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.3);border-radius:10px;color:var(--bl);font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:8px">🔐 Entrar com Face ID / Touch ID</button>
     <p style="font-size:12px;color:var(--tx2);text-align:center;margin-top:14px;line-height:1.8">Coordenador: <b style="color:var(--tx)">Dr. Rodrigo Cahuana Chipayo</b><br><span style="font-size:11px;color:var(--tx3)">CRM 11707/PB · UPA Pediátrica Bancários</span></p>
     <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
@@ -791,7 +789,7 @@ function sbTest(){
 // UPA Coordinates — Gestor pode alterar em Admin → Configurações
 var UPA_LAT  = -7.148314;
 // Theme
-var DARK_MODE = true;
+var DARK_MODE = false;
 var UPA_LNG  = -34.842389;
 var UPA_RADIUS = 50; // metros
 
@@ -2021,31 +2019,31 @@ function applyTheme(){
   if(tb)tb.textContent=DARK_MODE?'🌙':'☀️';
   if(DARK_MODE){
     // Professional dark medical theme
-    document.documentElement.style.setProperty('--bg','#0d1b2e');
-    document.documentElement.style.setProperty('--sf','#122040');
-    document.documentElement.style.setProperty('--sf2','#1a2d52');
-    document.documentElement.style.setProperty('--sf3','#1f3560');
-    document.documentElement.style.setProperty('--bd','#243d6e');
-    document.documentElement.style.setProperty('--bd2','#2d4d88');
-    document.documentElement.style.setProperty('--tx','#ddeeff');
-    document.documentElement.style.setProperty('--tx2','#7eaad4');
-    document.documentElement.style.setProperty('--tx3','#4a7aaa');
-    document.documentElement.style.setProperty('--bl','#4da6ff');
-    document.documentElement.style.setProperty('--bl2','#2196f3');
+    document.documentElement.style.setProperty('--bg','#071a2e');
+    document.documentElement.style.setProperty('--sf','#0d2640');
+    document.documentElement.style.setProperty('--sf2','#123354');
+    document.documentElement.style.setProperty('--sf3','#173d64');
+    document.documentElement.style.setProperty('--bd','#1e4d7a');
+    document.documentElement.style.setProperty('--bd2','#265d94');
+    document.documentElement.style.setProperty('--tx','#e3f2ff');
+    document.documentElement.style.setProperty('--tx2','#82b4d8');
+    document.documentElement.style.setProperty('--tx3','#4a80aa');
+    document.documentElement.style.setProperty('--bl','#29b6f6');
+    document.documentElement.style.setProperty('--bl2','#0288d1');
     document.body.classList.remove('light');
   } else {
     // Professional light medical theme
-    document.documentElement.style.setProperty('--bg','#e3eefc');
-    document.documentElement.style.setProperty('--sf','#f0f7ff');
-    document.documentElement.style.setProperty('--sf2','#d6e8f8');
-    document.documentElement.style.setProperty('--sf3','#c5ddf5');
-    document.documentElement.style.setProperty('--bd','#a8cce8');
-    document.documentElement.style.setProperty('--bd2','#8ab8dc');
-    document.documentElement.style.setProperty('--tx','#062040');
-    document.documentElement.style.setProperty('--tx2','#1a4a80');
-    document.documentElement.style.setProperty('--tx3','#4a80bc');
-    document.documentElement.style.setProperty('--bl','#1565c0');
-    document.documentElement.style.setProperty('--bl2','#0d47a1');
+    document.documentElement.style.setProperty('--bg','#eef5fd');
+    document.documentElement.style.setProperty('--sf','#ffffff');
+    document.documentElement.style.setProperty('--sf2','#e0eefc');
+    document.documentElement.style.setProperty('--sf3','#d0e6fa');
+    document.documentElement.style.setProperty('--bd','#b3d4f5');
+    document.documentElement.style.setProperty('--bd2','#90bfee');
+    document.documentElement.style.setProperty('--tx','#0a1929');
+    document.documentElement.style.setProperty('--tx2','#1e4976');
+    document.documentElement.style.setProperty('--tx3','#4a7ab5');
+    document.documentElement.style.setProperty('--bl','#0277bd');
+    document.documentElement.style.setProperty('--bl2','#01579b');
     document.body.classList.add('light');
   }
 }
