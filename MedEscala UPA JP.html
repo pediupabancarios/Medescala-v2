@@ -494,29 +494,29 @@ function registerServiceWorker(){
   <div class="lcard" style="max-width:400px">
     <!-- Logo + Brand -->
     <div style="text-align:center;margin-bottom:28px">
-      <div style="width:80px;height:80px;background:linear-gradient(135deg,#08326e,#2b8fef);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 32px rgba(43,143,239,.4)">
-        <span style="font-size:40px">🏥</span>
+      <div style="width:80px;height:80px;margin:0 auto 16px;filter:drop-shadow(0 8px 24px rgba(29,111,164,.5))">
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#1d6fa4'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
       </div>
       <h1 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#fff,#7dbeff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">MedEscala</h1>
-      <p style="color:var(--tx2);font-size:13px">UPA Pediátrica · João Pessoa / PB</p>
+      <p style="color:var(--tx3);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">UPA Pediátrica · João Pessoa / PB</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px">
         <span style="width:8px;height:8px;background:var(--tl);border-radius:50%;animation:blink 2s infinite"></span>
         <span style="font-size:11px;color:var(--tl);font-weight:600">Sistema Online</span>
       </div>
     </div>
-    <!-- Info cards -->
+    <!-- Feature cards -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px">
-      <div style="background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.2);border-radius:10px;padding:10px;text-align:center">
-        <div style="font-size:20px;margin-bottom:4px">📅</div>
-        <div style="font-size:10px;color:var(--tx2);font-weight:600">ESCALAS</div>
+      <div style="background:rgba(29,111,164,.12);border:1px solid rgba(29,111,164,.25);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📅</div>
+        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">ESCALAS</div>
       </div>
-      <div style="background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:10px;padding:10px;text-align:center">
-        <div style="font-size:20px;margin-bottom:4px">🔄</div>
-        <div style="font-size:10px;color:var(--tx2);font-weight:600">TROCAS</div>
+      <div style="background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.25);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">🔄</div>
+        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">TROCAS</div>
       </div>
-      <div style="background:rgba(232,168,37,.1);border:1px solid rgba(232,168,37,.2);border-radius:10px;padding:10px;text-align:center">
-        <div style="font-size:20px;margin-bottom:4px">📍</div>
-        <div style="font-size:10px;color:var(--tx2);font-weight:600">GPS 50m</div>
+      <div style="background:rgba(180,83,9,.1);border:1px solid rgba(180,83,9,.25);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:22px;margin-bottom:5px">📍</div>
+        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">GPS 50m</div>
       </div>
     </div>
     <!-- Form -->
@@ -531,7 +531,7 @@ function registerServiceWorker(){
     </div>
     <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#155a87,#1d6fa4);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
     <button id="BIOBTN" onclick="tryBiometricLogin()" style="display:none;width:100%;justify-content:center;padding:11px;margin-bottom:10px;background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.3);border-radius:10px;color:var(--bl);font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:8px">🔐 Entrar com Face ID / Touch ID</button>
-    <p style="font-size:11px;color:var(--tx3);text-align:center;margin-top:14px;line-height:1.7">Login enviado pelo coordenador.<br>Senha = número do CRM.<br>Dr. Rodrigo Cahuana — CRM 11707/PB</p>
+    <p style="font-size:12px;color:var(--tx2);text-align:center;margin-top:14px;line-height:1.8">Coordenador: <b style="color:var(--tx)">Dr. Rodrigo Cahuana Chipayo</b><br><span style="font-size:11px;color:var(--tx3)">CRM 11707/PB · UPA Pediátrica Bancários</span></p>
     <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
     <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
     <div id="BIOBTN" style="display:none;margin-top:10px">
