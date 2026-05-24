@@ -11,19 +11,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-/* Dark theme - Professional Medical */
---bg:#0a0e1a;--sf:#111827;--sf2:#1a2236;--sf3:#1e2a40;
---bd:#1e2d45;--bd2:#243652;
---tx:#e8edf5;--tx2:#8a9ab5;--tx3:#4a5a75;
---bl:#1d6fa4;--bl2:#155a87;
---tl:#0d9488;--gd:#b45309;--rs:#be3a5a;--gn:#059669;--pu:#7c3aed;--or:#c2410c;
-/* Light theme values (applied via JS) */
+/* Light Blue Medical Theme */
+--bg:#e8f2fb;--sf:#f0f7ff;--sf2:#daeaf8;--sf3:#cce0f5;
+--bd:#b8d4ee;--bd2:#9ec4e6;
+--tx:#0d2137;--tx2:#2d5680;--tx3:#5a8ab8;
+--bl:#1565c0;--bl2:#0d47a1;
+--tl:#00796b;--gd:#e65100;--rs:#c62828;--gn:#2e7d32;--pu:#6a1b9a;--or:#bf360c;
 --sw:260px;--th:60px;--bh:64px;
 --sit:env(safe-area-inset-top,0px);--sib:env(safe-area-inset-bottom,0px);
 /* Shadows */
---shadow-sm:0 1px 3px rgba(0,0,0,.4);
---shadow-md:0 4px 12px rgba(0,0,0,.5);
---shadow-lg:0 8px 24px rgba(0,0,0,.6);
+--shadow-sm:0 1px 4px rgba(21,101,192,.15);
+--shadow-md:0 4px 16px rgba(21,101,192,.2);
+--shadow-lg:0 8px 32px rgba(21,101,192,.25);
 /* Radius */
 --r-sm:8px;--r-md:14px;--r-lg:20px;
 }
@@ -299,14 +298,14 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 #TB{height:var(--th);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-sm)}
 
 /* Improved sidebar */
-#SB{width:var(--sw);background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;box-shadow:2px 0 8px rgba(0,0,0,.3)}
+#SB{width:var(--sw);background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(21,101,192,.15)}
 .sb-logo{padding:18px 16px;border-bottom:1px solid var(--bd)}
 .sb-logo h1{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.3px}
 
 /* Improved nav items */
 .nv{padding:9px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;font-weight:500;border-radius:var(--r-sm);margin:2px 8px;transition:all .15s}
 .nv:hover{background:var(--sf2)}
-.nv.on{background:rgba(29,111,164,.18);color:var(--bl);font-weight:600}
+.nv.on{background:rgba(21,101,192,.2);color:var(--bl);font-weight:600}
 
 /* Improved input fields */
 input,select,textarea{border-radius:var(--r-sm);border:1.5px solid var(--bd);background:var(--sf2);color:var(--tx);padding:10px 12px;font-size:14px;font-family:'Roboto',sans-serif;transition:border-color .2s,box-shadow .2s;width:100%}
@@ -495,7 +494,7 @@ function registerServiceWorker(){
     <!-- Logo + Brand -->
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:80px;height:80px;margin:0 auto 16px;filter:drop-shadow(0 8px 24px rgba(29,111,164,.5))">
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#1d6fa4'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#1565c0'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
       </div>
       <h1 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#fff,#7dbeff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">MedEscala</h1>
       <p style="color:var(--tx3);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">UPA Pediátrica · João Pessoa / PB</p>
@@ -529,7 +528,7 @@ function registerServiceWorker(){
       <label class="fl">Senha (número do CRM)</label>
       <input type="password" id="LIP" placeholder="Ex: 11707" autocomplete="current-password" inputmode="numeric" style="background:rgba(255,255,255,.06)">
     </div>
-    <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#155a87,#1d6fa4);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
+    <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#0d47a1,#1565c0);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
     <button id="BIOBTN" onclick="tryBiometricLogin()" style="display:none;width:100%;justify-content:center;padding:11px;margin-bottom:10px;background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.3);border-radius:10px;color:var(--bl);font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:8px">🔐 Entrar com Face ID / Touch ID</button>
     <p style="font-size:12px;color:var(--tx2);text-align:center;margin-top:14px;line-height:1.8">Coordenador: <b style="color:var(--tx)">Dr. Rodrigo Cahuana Chipayo</b><br><span style="font-size:11px;color:var(--tx3)">CRM 11707/PB · UPA Pediátrica Bancários</span></p>
     <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
@@ -1429,7 +1428,7 @@ function initApp(){
     ST.exchanges=[];ST.notifs=[];ST.log=[];
   }
   buildSB();buildBN();startClk();updateNBadge();
-  goTo('dashboard');checkPWA();
+  goTo(isG()?'dashboard':'calendar');checkPWA();
   // Sync in background — UI already showing
   initRealtime();
   connectRealtime();
@@ -1985,31 +1984,31 @@ function applyTheme(){
   if(tb)tb.textContent=DARK_MODE?'🌙':'☀️';
   if(DARK_MODE){
     // Professional dark medical theme
-    document.documentElement.style.setProperty('--bg','#0a0e1a');
-    document.documentElement.style.setProperty('--sf','#111827');
-    document.documentElement.style.setProperty('--sf2','#1a2236');
-    document.documentElement.style.setProperty('--sf3','#1e2a40');
-    document.documentElement.style.setProperty('--bd','#1e2d45');
-    document.documentElement.style.setProperty('--bd2','#243652');
-    document.documentElement.style.setProperty('--tx','#e8edf5');
-    document.documentElement.style.setProperty('--tx2','#8a9ab5');
-    document.documentElement.style.setProperty('--tx3','#4a5a75');
-    document.documentElement.style.setProperty('--bl','#1d6fa4');
-    document.documentElement.style.setProperty('--bl2','#155a87');
+    document.documentElement.style.setProperty('--bg','#0d1b2e');
+    document.documentElement.style.setProperty('--sf','#122040');
+    document.documentElement.style.setProperty('--sf2','#1a2d52');
+    document.documentElement.style.setProperty('--sf3','#1f3560');
+    document.documentElement.style.setProperty('--bd','#243d6e');
+    document.documentElement.style.setProperty('--bd2','#2d4d88');
+    document.documentElement.style.setProperty('--tx','#ddeeff');
+    document.documentElement.style.setProperty('--tx2','#7eaad4');
+    document.documentElement.style.setProperty('--tx3','#4a7aaa');
+    document.documentElement.style.setProperty('--bl','#4da6ff');
+    document.documentElement.style.setProperty('--bl2','#2196f3');
     document.body.classList.remove('light');
   } else {
     // Professional light medical theme
-    document.documentElement.style.setProperty('--bg','#f5f7fa');
-    document.documentElement.style.setProperty('--sf','#ffffff');
-    document.documentElement.style.setProperty('--sf2','#eef1f7');
-    document.documentElement.style.setProperty('--sf3','#e4e8f2');
-    document.documentElement.style.setProperty('--bd','#d0d8e8');
-    document.documentElement.style.setProperty('--bd2','#b8c4d8');
-    document.documentElement.style.setProperty('--tx','#0f1c2e');
-    document.documentElement.style.setProperty('--tx2','#3d5270');
-    document.documentElement.style.setProperty('--tx3','#6b84a0');
-    document.documentElement.style.setProperty('--bl','#1a5f8c');
-    document.documentElement.style.setProperty('--bl2','#134a6e');
+    document.documentElement.style.setProperty('--bg','#e3eefc');
+    document.documentElement.style.setProperty('--sf','#f0f7ff');
+    document.documentElement.style.setProperty('--sf2','#d6e8f8');
+    document.documentElement.style.setProperty('--sf3','#c5ddf5');
+    document.documentElement.style.setProperty('--bd','#a8cce8');
+    document.documentElement.style.setProperty('--bd2','#8ab8dc');
+    document.documentElement.style.setProperty('--tx','#062040');
+    document.documentElement.style.setProperty('--tx2','#1a4a80');
+    document.documentElement.style.setProperty('--tx3','#4a80bc');
+    document.documentElement.style.setProperty('--bl','#1565c0');
+    document.documentElement.style.setProperty('--bl2','#0d47a1');
     document.body.classList.add('light');
   }
 }
