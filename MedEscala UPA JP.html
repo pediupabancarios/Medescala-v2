@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="MedEscala">
 <meta name="theme-color" content="#08326e">
 <title>MedEscala — UPA Pediatria JP</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
 /* Ultra Light Blue Medical Theme */
@@ -207,10 +207,124 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 .setup-step b{color:var(--tx)}
 .lerr{background:rgba(240,92,122,.1);border:1px solid rgba(240,92,122,.28);border-radius:8px;padding:8px 12px;color:var(--rs);font-size:12px;margin-bottom:12px;display:none}
 .lerr.on{display:block}
-/* LOGIN */
-#LS{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:600;padding:16px;background-image:radial-gradient(ellipse at 30% 20%,rgba(2,119,189,.15),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(2,136,209,.08),transparent 50%)}
+/* LOGIN — Premium Redesign */
+#LS{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  z-index:600;padding:20px;overflow:hidden;
+  background:#020d1a;
+}
 #LS.on{display:flex}
-.lcard{background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:30px 26px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#LS::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%,rgba(0,119,182,.38) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 85%,rgba(0,180,216,.22) 0%,transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(2,62,138,.45) 0%,transparent 60%);
+  animation:lsBg 8s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes lsBg{0%{filter:hue-rotate(0deg) brightness(1)}100%{filter:hue-rotate(15deg) brightness(1.18)}}
+#LS::after{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,180,216,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);
+  pointer-events:none;
+}
+.ls-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(60px);animation:orbFloat 10s ease-in-out infinite}
+.ls-orb1{width:320px;height:320px;background:rgba(0,119,182,.28);top:-100px;left:-100px;animation-delay:0s}
+.ls-orb2{width:220px;height:220px;background:rgba(0,180,216,.2);bottom:-70px;right:-70px;animation-delay:-4s}
+.ls-orb3{width:160px;height:160px;background:rgba(0,150,199,.16);top:45%;left:62%;animation-delay:-2s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(20px,-15px) scale(1.06)}66%{transform:translate(-15px,20px) scale(.94)}}
+.lcard{
+  position:relative;z-index:2;
+  background:rgba(4,20,42,.8);
+  backdrop-filter:blur(32px) saturate(160%);
+  -webkit-backdrop-filter:blur(32px) saturate(160%);
+  border:1px solid rgba(0,180,216,.2);
+  border-radius:28px;padding:36px 30px 26px;
+  width:100%;max-width:390px;
+  box-shadow:0 0 0 1px rgba(0,180,216,.07),0 32px 80px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.07);
+  animation:lcIn .5s cubic-bezier(.34,1.3,.64,1) both;
+}
+@keyframes lcIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+.ls-logo-wrap{text-align:center;margin-bottom:26px}
+.ls-icon-ring{
+  width:88px;height:88px;margin:0 auto 15px;border-radius:26px;
+  background:linear-gradient(145deg,#0077b6,#00b4d8);
+  box-shadow:0 12px 40px rgba(0,180,216,.4),inset 0 1px 0 rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  animation:iconPop .6s .1s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes iconPop{from{opacity:0;transform:scale(.5) rotate(-10deg)}to{opacity:1;transform:none}}
+.ls-title{
+  font-family:\'Sora\',\'Montserrat\',sans-serif;font-size:30px;font-weight:800;
+  background:linear-gradient(135deg,#fff 30%,#90e0ef);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:-1px;margin-bottom:4px;animation:fadeUpL .4s .2s ease both;
+}
+.ls-sub{
+  font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(144,224,239,.55);font-weight:500;animation:fadeUpL .4s .3s ease both;
+}
+.ls-online{
+  display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:4px 12px;
+  background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.25);border-radius:20px;
+  animation:fadeUpL .4s .35s ease both;
+}
+.ls-online-dot{width:7px;height:7px;background:#00c9a7;border-radius:50%;animation:blink 2s infinite}
+.ls-online-lbl{font-size:10.5px;color:#00c9a7;font-weight:600;letter-spacing:.5px}
+@keyframes fadeUpL{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ls-features{display:flex;gap:7px;justify-content:center;margin-bottom:22px;animation:fadeUpL .4s .4s ease both}
+.ls-feat{
+  padding:6px 11px;border-radius:20px;
+  background:rgba(0,119,182,.14);border:1px solid rgba(0,180,216,.18);
+  font-size:9.5px;font-weight:700;color:rgba(144,224,239,.75);
+  letter-spacing:.8px;text-transform:uppercase;display:flex;align-items:center;gap:4px;
+}
+.ls-field{margin-bottom:13px;position:relative;animation:fadeUpL .4s ease both}
+.ls-field:nth-child(1){animation-delay:.45s}.ls-field:nth-child(2){animation-delay:.5s}
+.ls-field label{
+  display:block;font-size:9.5px;font-weight:700;letter-spacing:1.1px;
+  text-transform:uppercase;color:rgba(144,224,239,.55);margin-bottom:6px;
+}
+.ls-field input{
+  width:100%;padding:14px 16px;
+  background:rgba(0,180,216,.06);border:1.5px solid rgba(0,180,216,.16);border-radius:14px;
+  color:#e0f0fc;font-size:14px;outline:none;transition:all .2s;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.2);
+}
+.ls-field input::placeholder{color:rgba(144,224,239,.28)}
+.ls-field input:focus{border-color:rgba(0,180,216,.55);background:rgba(0,180,216,.1);box-shadow:0 0 0 4px rgba(0,180,216,.1),inset 0 2px 8px rgba(0,0,0,.15)}
+.ls-btn{
+  width:100%;padding:15px;margin-top:6px;
+  background:linear-gradient(135deg,#0077b6 0%,#00b4d8 100%);
+  border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;letter-spacing:.3px;
+  box-shadow:0 8px 28px rgba(0,180,216,.35),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:all .2s;position:relative;overflow:hidden;
+  animation:fadeUpL .4s .55s ease both;
+}
+.ls-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.14),transparent);border-radius:14px}
+.ls-btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(0,180,216,.45)}
+.ls-btn:active{transform:translateY(0)}
+.ls-bio{
+  width:100%;padding:12px;margin-top:9px;
+  background:rgba(0,180,216,.07);border:1.5px solid rgba(0,180,216,.18);border-radius:14px;
+  color:rgba(144,224,239,.8);font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;display:none;animation:fadeUpL .4s .6s ease both;
+}
+.ls-bio:hover{background:rgba(0,180,216,.14);border-color:rgba(0,180,216,.38)}
+.ls-footer{text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid rgba(0,180,216,.1);animation:fadeUpL .4s .65s ease both}
+.ls-footer p{font-size:11px;color:rgba(144,224,239,.4);line-height:1.9}
+.ls-footer b{color:rgba(144,224,239,.7);font-weight:600}
+.ls-cfg{
+  width:100%;padding:8px;margin-top:8px;
+  background:transparent;border:1px solid rgba(0,180,216,.1);border-radius:10px;
+  color:rgba(144,224,239,.32);font-size:10px;cursor:pointer;transition:all .2s;
+  animation:fadeUpL .4s .7s ease both;
+}
+.ls-cfg:hover{color:rgba(144,224,239,.65);border-color:rgba(0,180,216,.28)}
 .llogo{text-align:center;margin-bottom:24px}
 .llogo .lic{font-size:44px;display:block;margin-bottom:8px}
 .llogo h1{font-family:\'Montserrat\',sans-serif;font-size:24px;font-weight:700}
@@ -539,53 +653,54 @@ function registerServiceWorker(){
 
 <!-- LOGIN -->
 <div id="LS">
-  <div class="lcard" style="max-width:400px">
-    <!-- Logo + Brand -->
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="width:80px;height:80px;margin:0 auto 16px;filter:drop-shadow(0 8px 24px rgba(29,111,164,.5))">
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>  <rect width='80' height='80' rx='18' fill='#0277bd'/>  <rect x='22' y='10' width='36' height='60' rx='4' fill='rgba(255,255,255,0.15)'/>  <rect x='26' y='14' width='28' height='52' rx='3' fill='rgba(255,255,255,0.1)'/>  <!-- Cross symbol -->  <rect x='35' y='22' width='10' height='30' rx='2' fill='white'/>  <rect x='25' y='32' width='30' height='10' rx='2' fill='white'/>  <!-- Bottom detail -->  <rect x='30' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/>  <rect x='42' y='58' width='8' height='12' rx='1' fill='rgba(255,255,255,0.6)'/></svg>
+  <!-- Animated orbs -->
+  <div class="ls-orb ls-orb1"></div>
+  <div class="ls-orb ls-orb2"></div>
+  <div class="ls-orb ls-orb3"></div>
+
+  <div class="lcard">
+    <!-- Logo -->
+    <div class="ls-logo-wrap">
+      <div class="ls-icon-ring">
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' width='52' height='52'>
+          <rect x='22' y='8' width='16' height='44' rx='3.5' fill='white'/>
+          <rect x='8' y='22' width='44' height='16' rx='3.5' fill='white'/>
+        </svg>
       </div>
-      <h1 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#fff,#7dbeff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">MedEscala</h1>
-      <p style="color:var(--tx3);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">UPA Pediátrica · João Pessoa / PB</p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px">
-        <span style="width:8px;height:8px;background:var(--tl);border-radius:50%;animation:blink 2s infinite"></span>
-        <span style="font-size:11px;color:var(--tl);font-weight:600">Sistema Online</span>
-      </div>
-    </div>
-    <!-- Feature cards -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px">
-      <div style="background:rgba(29,111,164,.12);border:1px solid rgba(29,111,164,.25);border-radius:12px;padding:12px;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">📅</div>
-        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">ESCALAS</div>
-      </div>
-      <div style="background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.25);border-radius:12px;padding:12px;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">🔄</div>
-        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">TROCAS</div>
-      </div>
-      <div style="background:rgba(180,83,9,.1);border:1px solid rgba(180,83,9,.25);border-radius:12px;padding:12px;text-align:center">
-        <div style="font-size:22px;margin-bottom:5px">📍</div>
-        <div style="font-size:9px;color:var(--tx2);font-weight:700;letter-spacing:.8px;text-transform:uppercase">GPS 50m</div>
+      <div class="ls-title">MedEscala</div>
+      <div class="ls-sub">UPA Pediátrica · João Pessoa / PB</div>
+      <div class="ls-online">
+        <span class="ls-online-dot"></span>
+        <span class="ls-online-lbl">Sistema Online</span>
       </div>
     </div>
+
+    <!-- Features -->
+    <div class="ls-features">
+      <div class="ls-feat">📅 Escalas</div>
+      <div class="ls-feat">🔄 Trocas</div>
+      <div class="ls-feat">📍 GPS</div>
+    </div>
+
     <!-- Form -->
     <div class="lerr" id="LERR"></div>
-    <div class="fg">
-      <label class="fl">Usuário</label>
-      <input type="text" id="LIU" placeholder="nome.sobrenome" autocapitalize="none" autocomplete="username" autocorrect="off" spellcheck="false" style="background:rgba(255,255,255,.06)">
+    <div class="ls-field">
+      <label>Usuário</label>
+      <input type="text" id="LIU" placeholder="nome.sobrenome" autocapitalize="none" autocomplete="username" autocorrect="off" spellcheck="false">
     </div>
-    <div class="fg">
-      <label class="fl">Senha (número do CRM)</label>
-      <input type="password" id="LIP" placeholder="Ex: 11707" autocomplete="current-password" inputmode="numeric" style="background:rgba(255,255,255,.06)">
+    <div class="ls-field">
+      <label>Senha (número do CRM)</label>
+      <input type="password" id="LIP" placeholder="Ex: 11707" autocomplete="current-password" inputmode="numeric">
     </div>
-    <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#01579b,#0277bd);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
-    <button id="BIOBTN" onclick="tryBiometricLogin()" style="display:none;width:100%;justify-content:center;padding:11px;margin-bottom:10px;background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.3);border-radius:10px;color:var(--bl);font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:8px">🔐 Entrar com Face ID / Touch ID</button>
-    <p style="font-size:12px;color:var(--tx2);text-align:center;margin-top:14px;line-height:1.8">Coordenador: <b style="color:var(--tx)">Dr. Rodrigo Cahuana Chipayo</b><br><span style="font-size:11px;color:var(--tx3)">CRM 11707/PB · UPA Pediátrica Bancários</span></p>
-    <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
-    <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
-    <div id="BIOBTN" style="display:none;margin-top:10px">
-      <button class="btn bgh" style="width:100%;justify-content:center;padding:11px;font-size:14px" onclick="loginWithBiometric()">🔐 Entrar com Face ID / Digital</button>
+
+    <button class="ls-btn" id="LBTN">Entrar →</button>
+    <button class="ls-bio" id="BIOBTN" onclick="tryBiometricLogin()">🔐 Entrar com Face ID / Touch ID</button>
+
+    <!-- Footer -->
+    <div class="ls-footer">
+      <p>Coordenador: <b>Dr. Rodrigo Cahuana Chipayo</b><br>CRM 11707/PB · UPA Pediátrica Bancários</p>
     </div>
-    <button class="btn bgh sm" style="width:100%;justify-content:center;margin-top:10px;font-size:11px" onclick="showSetup()">⚙️ Reconfigurar banco de dados</button>
+    <button class="ls-cfg" onclick="showSetup()">⚙️ Reconfigurar banco de dados</button>
   </div>
 </div>
 
