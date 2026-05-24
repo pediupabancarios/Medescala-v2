@@ -1748,7 +1748,9 @@ function doStart(id){
 }
 function modalClose(id){
   var s=ST.shifts.find(function(x){return x.id===id;});if(!s)return;
-  // Geo check first (gestor bypasses automatically)
+  // Gestor bypasses GPS - use admCloseShift instead
+  if(isG()){admCloseShift(id);return;}
+  // Geo check for plantonists
   checkGeoAndRun(function(){ _doModalClose(id); });
 }
 function _doModalClose(id){
@@ -1896,7 +1898,7 @@ function pgMS(){
   if(fT)fl=fl.filter(function(s){return s.type===fT;});
   if(fS)fl=fl.filter(function(s){return s.status===fS;});
   var h='<div class="page"><div class="ph"><h2>📋 Gerenciar Plantões</h2></div><div style="margin-bottom:14px"><button class="btn bp sm" onclick="modalAddShift()">+ Inserir Plantão</button></div><div class="card"><div class="fil"><select id="FMS" onchange="pgMS()"><option value="">Todos meses</option>'+months.map(function(m){return'<option value="'+m+'"'+(m===fM?' selected':'')+'>'+m+'</option>';}).join('')+'</select><select id="FTS" onchange="pgMS()"><option value="">Todos turnos</option><option value="D"'+(fT==='D'?' selected':'')+'>☀️ Diurno</option><option value="N"'+(fT==='N'?' selected':'')+'>🌙 Noturno</option><option value="d"'+(fT==='d'?' selected':'')+'>☀️ Extra D</option><option value="n"'+(fT==='n'?' selected':'')+'>🌙 Extra N</option></select><select id="FSS" onchange="pgMS()"><option value="">Todos status</option><option value="open"'+(fS==='open'?' selected':'')+'>Aberto</option><option value="active"'+(fS==='active'?' selected':'')+'>Ativo</option><option value="closed"'+(fS==='closed'?' selected':'')+'>Fechado</option></select><span style="font-size:12px;color:var(--tx2)">'+fl.length+' registros</span></div><div class="tw"><table><thead><tr><th>Data</th><th>Turno</th><th>Médico</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
-  fl.forEach(function(s){h+='<tr><td style="font-family:\'Roboto Mono\',monospace;font-size:11.5px;white-space:nowrap">'+fD(s.date)+'</td><td>'+bS(s.type)+'</td><td>'+dSN(s.docId)+'</td><td>'+bSt(s.status)+'</td><td><div style="display:flex;gap:4px;flex-wrap:nowrap">'+(s.status==='open'?'<button class="btn bt xs" onclick="admStart(\''+s.id+'\')">▶</button>':'')+(s.status==='active'?'<button class="btn br xs" onclick="modalClose(\''+s.id+'\')">■</button>':'')+'<button class="btn bgh xs" onclick="modalEditShift(\''+s.id+'\')">✏️</button><button class="btn bgh xs" style="color:var(--rs)" onclick="delShift(\''+s.id+'\')">🗑</button></div></td></tr>';});
+  fl.forEach(function(s){h+='<tr><td style="font-family:\'Roboto Mono\',monospace;font-size:11.5px;white-space:nowrap">'+fD(s.date)+'</td><td>'+bS(s.type)+'</td><td>'+dSN(s.docId)+'</td><td>'+bSt(s.status)+'</td><td><div style="display:flex;gap:4px;flex-wrap:nowrap">'+(s.status==='open'?'<button class="btn bt xs" onclick="admStartShift(\''+s.id+'\')">▶</button>':'')+(s.status==='active'?'<button class="btn br xs" onclick="admCloseShift(\''+s.id+'\')">■ Fechar</button>':'')+'<button class="btn bgh xs" onclick="modalEditShift(\''+s.id+'\')">✏️</button><button class="btn bgh xs" style="color:var(--rs)" onclick="delShift(\''+s.id+'\')">🗑</button></div></td></tr>';});
   h+='</tbody></table></div></div></div>';G('CONT').innerHTML=h;
 }
 function modalAddShift(){
@@ -2724,47 +2726,69 @@ function admStartShift(id){
 }
 
 function doAdmStart(id){
-  var s=ST.shifts.find(function(x){return x.id===id;});if(!s)return;
-  var note=G('ADMNOTE');
-  s.status='active';s.startedAt=Date.now();
-  s.startNote=(note?note.value.trim():'')+'[Iniciado pelo gestor]';
+  var s=ST.shifts.find(function(x){return x.id===id;});
+  if(!s){showToast('Plantão não encontrado','err');return;}
+  var noteEl=G('ADMNOTE');
+  var noteText=noteEl?noteEl.value.trim():'';
+  s.status='active';
+  s.startedAt=Date.now();
+  s.startNote=noteText?noteText+' [Gestor]':'[Iniciado pelo gestor]';
+  closeModal();
   save('shifts').then(function(){
-    addLog('Plantão iniciado pelo gestor: '+fD(s.date)+' '+sLbl(s.type)+' — '+dSN(s.docId));
-    pushNotif('▶ Seu plantão foi iniciado pelo gestor: '+fD(s.date)+' '+sLbl(s.type));
-    closeModal();syncing=false;doSync();showToast('✅ Plantão iniciado!','ok');
+    syncing=false;
+    doSync();
+    showToast('✅ Plantão de '+dSN(s.docId)+' iniciado!','ok');
+    addLog('Gestor iniciou: '+fD(s.date)+' '+sLbl(s.type)+' — '+dSN(s.docId));
+    try{pushNotif('Seu plantão foi iniciado pelo Dr. Rodrigo: '+fD(s.date),'▶');}catch(e){}
+    refreshPage();
+  }).catch(function(e){
+    showToast('Erro ao salvar: '+e.message,'err');
   });
 }
 
 function admCloseShift(id){
-  if(!isG())return;
+  if(!isG()){showToast('Acesso restrito ao gestor','err');return;}
   var s=ST.shifts.find(function(x){return x.id===id;});
-  if(!s)return;
+  if(!s){showToast('Plantão não encontrado','err');return;}
+  if(s.status==='closed'){showToast('Plantão já encerrado','err');return;}
   var doc=dBy(s.docId);
-  openModal('<div class="mh"><h3>■ Fechar Plantão</h3><button class="mcl" onclick="closeModal()">✕</button></div>'
+  var docName=doc?doc.name:'Médico não encontrado';
+  openModal('<div class="mh"><h3>■ Encerrar Plantão</h3><button class="mcl" onclick="closeModal()">✕</button></div>'
     +'<div class="mbd">'
-    +'<div style="background:var(--sf2);border-radius:10px;padding:14px;margin-bottom:14px">'
-    +'<b style="font-size:14px;display:block">'+(doc?doc.name:'—')+'</b>'
-    +'<span style="font-size:13px;color:var(--tx2)">'+fD(s.date)+' · '+sLbl(s.type)+'</span></div>'
-    +'<div class="fg"><label class="fl">Relatório de encerramento (opcional)</label>'
-    +'<textarea id="ADMCLNOTE" placeholder="Observações de encerramento..."></textarea></div>'
-    +'<div style="background:rgba(21,101,192,.1);border:1px solid rgba(21,101,192,.2);border-radius:8px;padding:10px;font-size:12px;color:var(--tx2)">'
+    +'<div style="background:var(--sf2);border-radius:10px;padding:14px;margin-bottom:14px;border-left:3px solid var(--rs)">'
+    +'<b style="font-size:15px;display:block;margin-bottom:4px">'+docName+'</b>'
+    +'<span style="font-size:12px;color:var(--tx2)">'+fD(s.date)+' · '+sLbl(s.type)+' · '+sTime(s.type)+'</span><br>'
+    +'<span style="font-size:11px;color:var(--tx3)">Status atual: '+s.status+'</span></div>'
+    +'<div class="fg" style="margin-bottom:14px"><label class="fl">Observações (opcional)</label>'
+    +'<textarea id="ADMCLNOTE" rows="3" placeholder="Observações de encerramento..." style="resize:vertical"></textarea></div>'
+    +'<div style="background:rgba(2,119,189,.08);border:1px solid rgba(2,119,189,.2);border-radius:8px;padding:10px;font-size:12px;color:var(--tx2);margin-bottom:14px">'
     +'📍 Encerrado pelo gestor — sem restrição de localização</div>'
     +'</div>'
     +'<div class="mft">'
     +'<button class="btn bgh sm" onclick="closeModal()">Cancelar</button>'
-    +'<button class="btn br sm" onclick="doAdmClose(\''+id+'\')">■ Fechar Plantão</button>'
+    +'<button class="btn br sm" onclick="doAdmClose(\''+id+'\')">■ Confirmar Encerramento</button>'
     +'</div>');
 }
 
+
 function doAdmClose(id){
-  var s=ST.shifts.find(function(x){return x.id===id;});if(!s)return;
-  var note=G('ADMCLNOTE');
-  s.status='closed';s.closedAt=Date.now();
-  s.closeNote=(note?note.value.trim():'')+'[Encerrado pelo gestor]';
+  var s=ST.shifts.find(function(x){return x.id===id;});
+  if(!s){showToast('Plantão não encontrado','err');return;}
+  var noteEl=G('ADMCLNOTE');
+  var noteText=noteEl?noteEl.value.trim():'';
+  s.status='closed';
+  s.closedAt=Date.now();
+  s.closeNote=noteText?noteText+' [Gestor]':'[Encerrado pelo gestor]';
+  closeModal();
   save('shifts').then(function(){
-    addLog('Plantão encerrado pelo gestor: '+fD(s.date)+' '+sLbl(s.type)+' — '+dSN(s.docId));
-    pushNotif('■ Seu plantão foi encerrado pelo gestor: '+fD(s.date)+' '+sLbl(s.type));
-    closeModal();syncing=false;doSync();showToast('✅ Plantão encerrado!','ok');
+    syncing=false;
+    doSync();
+    showToast('✅ Plantão de '+dSN(s.docId)+' encerrado!','ok');
+    addLog('Gestor encerrou: '+fD(s.date)+' '+sLbl(s.type)+' — '+dSN(s.docId));
+    try{pushNotif('Seu plantão foi encerrado pelo Dr. Rodrigo: '+fD(s.date),'■');}catch(e){}
+    refreshPage();
+  }).catch(function(e){
+    showToast('Erro ao salvar: '+e.message,'err');
   });
 }
 </script>
