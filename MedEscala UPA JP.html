@@ -1651,7 +1651,7 @@ function pgCal(){
   for(var i=0;i<fd;i++)h+='<div class="cd emp"></div>';
   for(var day=1;day<=dim;day++){
     var dStr=mStr+'-'+p2(day),isT=dStr===td,ss=byDay[day]||[];
-    h+='<div class="cd'+(isT?' today':'')+'" onclick="calDay(\''+dStr+'\')">'+'<div class="cdn">'+day+'</div>';
+    h+='<div class="cd'+(isT?' today':'')+'" onclick="showDay(\''+dStr+'\')">'+'<div class="cdn">'+day+'</div>';
     ss.slice(0,5).forEach(function(s){var cls=s.status==='active'?'acts':s.type;var doc=dBy(s.docId);var lbl=doc?doc.ini+' '+(s.type==='D'||s.type==='d'?'☀':'🌙'):sLbl(s.type);h+='<span class="cpill '+cls+'">'+lbl+'</span>';});
     if(ss.length>5)h+='<span style="font-size:8px;color:var(--tx3)">+'+(ss.length-5)+'</span>';
     h+='</div>';
@@ -1661,7 +1661,7 @@ function pgCal(){
 }
 function calPrev(){calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1);pgCal();}
 function calNext(){calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1);pgCal();}
-function calDay(d){
+function showDay(d){
   var ss=ST.shifts.filter(function(s){return s.date===d;});
   if(!ss.length){showToast('Sem plantões neste dia');return;}
   var body='<div class="tw"><table><thead><tr><th>Turno</th><th>Horário</th><th>Médico</th><th>Status</th></tr></thead><tbody>';
@@ -2617,6 +2617,48 @@ function pgPassagemHist(){
   }
   h+='</div>';
   G('CONT').innerHTML=h;
+}
+
+function showDay(dateStr){
+  var shifts=ST.shifts.filter(function(s){return s.date===dateStr;});
+  var d=new Date(dateStr+'T12:00:00');
+  var dayFmt=d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  dayFmt=dayFmt.charAt(0).toUpperCase()+dayFmt.slice(1);
+  var h='<div class="mh"><h3>'+dayFmt+'</h3><button class="mcl" onclick="closeModal()">X</button></div>'
+    +'<div class="mbd">';
+  if(!shifts.length){
+    h+='<div style="text-align:center;padding:28px"><div style="font-size:40px;margin-bottom:12px">No shifts</div>'
+      +'<p style="color:var(--tx2)">Nenhum plantao neste dia</p></div>';
+  } else {
+    var grupos=[
+      {t:'D',lbl:'Diurno',hr:'07:00 - 19:00',bg:'rgba(180,83,9,.1)',brd:'rgba(180,83,9,.25)'},
+      {t:'d',lbl:'Extra Diurno',hr:'07:00 - 19:00',bg:'rgba(180,83,9,.07)',brd:'rgba(180,83,9,.18)'},
+      {t:'N',lbl:'Noturno',hr:'19:00 - 07:00',bg:'rgba(29,111,164,.1)',brd:'rgba(29,111,164,.25)'},
+      {t:'n',lbl:'Extra Noturno',hr:'19:00 - 07:00',bg:'rgba(29,111,164,.07)',brd:'rgba(29,111,164,.18)'}
+    ];
+    grupos.forEach(function(g){
+      var grp=shifts.filter(function(s){return s.type===g.t;});
+      if(!grp.length)return;
+      h+='<div style="background:'+g.bg+';border:1px solid '+g.brd+';border-radius:12px;padding:14px;margin-bottom:12px">'
+        +'<b style="font-size:14px">'+g.lbl+'</b>'
+        +'<span style="font-size:11px;color:var(--tx2);margin-left:8px">'+g.hr+'</span>';
+      grp.forEach(function(s){
+        var doc=dBy(s.docId);if(!doc)return;
+        var isActive=s.status==='active';
+        var isMine=s.docId===CU.id;
+        h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);margin-top:8px">'
+          +avH(doc,38)
+          +'<div style="flex:1"><b style="font-size:13px;display:block">'+doc.name+'</b>'
+          +'<span style="font-size:11px;color:var(--tx2)">CRM '+doc.crm+'/PB</span></div>'
+          +(isActive?'<span class="bdg active" style="font-size:10px">Ativo</span>':'')
+          +(isMine&&s.status==='open'?'<span class="bdg open" style="font-size:10px">Seu plantao</span>':'')
+          +'</div>';
+      });
+      h+='</div>';
+    });
+  }
+  h+='</div>';
+  openModal(h);
 }
 </script>
 </body>
