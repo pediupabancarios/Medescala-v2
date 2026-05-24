@@ -335,6 +335,57 @@ body.light{
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+/* ── SPLASH SCREEN ── */
+#SPLASH{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#01579b 0%,#0277bd 50%,#0288d1 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .5s ease,transform .5s ease;
+}
+#SPLASH.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
+.splash-logo{
+  width:100px;height:100px;border-radius:24px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+  animation:splashPop .6s cubic-bezier(.34,1.56,.64,1) forwards;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+@keyframes splashPop{
+  from{opacity:0;transform:scale(.5)}
+  to{opacity:1;transform:scale(1)}
+}
+.splash-title{
+  font-family:'Montserrat',sans-serif;font-size:32px;font-weight:800;
+  color:#fff;letter-spacing:-1px;margin-bottom:6px;
+  animation:splashFade .5s .3s ease both;
+}
+.splash-sub{
+  font-size:13px;color:rgba(255,255,255,.75);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:40px;
+  animation:splashFade .5s .4s ease both;
+}
+@keyframes splashFade{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.splash-bar{
+  width:160px;height:3px;background:rgba(255,255,255,.2);
+  border-radius:2px;overflow:hidden;
+  animation:splashFade .5s .5s ease both;
+}
+.splash-bar-fill{
+  height:100%;background:#fff;border-radius:2px;width:0%;
+  animation:splashLoad 1.8s .5s ease forwards;
+}
+@keyframes splashLoad{
+  0%{width:0%}70%{width:85%}100%{width:100%}
+}
+.splash-version{
+  position:absolute;bottom:32px;font-size:11px;
+  color:rgba(255,255,255,.4);letter-spacing:.5px;
+}
 </style>
 
 <!-- PWA Manifest with UPA Icon -->
@@ -539,6 +590,18 @@ function registerServiceWorker(){
 </div>
 
 <!-- APP -->
+<div id="SPLASH">
+  <div class="splash-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+      <rect x="22" y="8" width="16" height="44" rx="3" fill="white"/>
+      <rect x="8" y="22" width="44" height="16" rx="3" fill="white"/>
+    </svg>
+  </div>
+  <div class="splash-title">MedEscala</div>
+  <div class="splash-sub">UPA Pediátrica · João Pessoa</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  <div class="splash-version">v2.0 · 2026</div>
+</div>
 <div id="APP" style="display:none">
   <div id="OVL"></div>
   <aside id="SB">
@@ -2789,6 +2852,124 @@ function doAdmClose(id){
     refreshPage();
   }).catch(function(e){
     showToast('Erro ao salvar: '+e.message,'err');
+  });
+}
+
+/* ── SPLASH SCREEN ── */
+function hideSplash(){
+  var sp=document.getElementById('SPLASH');
+  if(!sp)return;
+  sp.classList.add('hide');
+  setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},600);
+}
+// Hide splash after load completes (max 2.5s)
+window.addEventListener('load',function(){
+  setTimeout(hideSplash, 2200);
+});
+
+/* ══════════════════════════════════════════════
+   LEMBRETES AUTOMÁTICOS — 2h antes do plantão
+══════════════════════════════════════════════ */
+var REMINDER_KEY = 'mes_reminders_sent';
+
+function scheduleReminders(){
+  if(!CU)return;
+  if(!('Notification' in window))return;
+  if(Notification.permission!=='granted')return;
+
+  var now = Date.now();
+  var twoHours = 2*60*60*1000;
+  var oneDay = 24*60*60*1000;
+
+  // Get shifts for next 48h
+  var upcoming = ST.shifts.filter(function(s){
+    if(s.docId!==CU.id)return false;
+    if(s.status!=='open')return false;
+    var shiftTime = getShiftStartTime(s.date, s.type);
+    var diff = shiftTime - now;
+    return diff > 0 && diff < oneDay*2;
+  });
+
+  // Load already-sent reminders
+  var sent = {};
+  try{sent=JSON.parse(localStorage.getItem(REMINDER_KEY)||'{}');}catch(e){}
+
+  upcoming.forEach(function(s){
+    var shiftTime = getShiftStartTime(s.date, s.type);
+    var diff = shiftTime - now;
+    var remKey2h = s.id+'_2h';
+    var remKey30m = s.id+'_30m';
+
+    // Schedule 2h reminder
+    if(!sent[remKey2h] && diff > twoHours){
+      var delay2h = diff - twoHours;
+      if(delay2h < oneDay){ // only schedule if within 24h
+        setTimeout(function(){
+          sendReminderNotif(s, '2 horas');
+          var s2={}; try{s2=JSON.parse(localStorage.getItem(REMINDER_KEY)||'{}');}catch(e){}
+          s2[remKey2h]=true; localStorage.setItem(REMINDER_KEY,JSON.stringify(s2));
+        }, delay2h);
+        console.log('Lembrete 2h agendado para '+s.date+' em '+Math.round(delay2h/60000)+'min');
+      }
+    }
+
+    // Schedule 30min reminder
+    var thirtyMin = 30*60*1000;
+    if(!sent[remKey30m] && diff > thirtyMin){
+      var delay30 = diff - thirtyMin;
+      if(delay30 < oneDay){
+        setTimeout(function(){
+          sendReminderNotif(s, '30 minutos');
+          var s2={}; try{s2=JSON.parse(localStorage.getItem(REMINDER_KEY)||'{}');}catch(e){}
+          s2[remKey30m]=true; localStorage.setItem(REMINDER_KEY,JSON.stringify(s2));
+        }, delay30);
+      }
+    }
+  });
+}
+
+function getShiftStartTime(date, type){
+  var isNight = type==='N'||type==='n';
+  var hour = isNight ? 19 : 7;
+  var d = new Date(date+'T'+p2(hour)+':00:00');
+  return d.getTime();
+}
+
+function sendReminderNotif(s, timeLabel){
+  var turno = sLbl(s.type);
+  var horario = sTime(s.type);
+  var title = 'Plantao em ' + timeLabel + '!';
+  var bodyText = turno + ' - ' + fD(s.date) + ' - ' + horario;
+  try{
+    var n = new Notification(title, {
+      body: bodyText,
+      vibrate: [200, 100, 200],
+      tag: 'shift-reminder-'+s.id,
+      requireInteraction: true
+    });
+    n.onclick = function(){window.focus();goTo('myshifts');};
+  }catch(e){console.warn('Notification failed:',e);}
+  showToast('Seu plantao comeca em '+timeLabel+'! '+turno+' - '+fD(s.date),'info');
+}
+
+
+function requestAndSchedule(){
+  if(!('Notification' in window)){
+    showToast('Notificações não suportadas neste dispositivo','err');
+    return;
+  }
+  if(Notification.permission==='granted'){
+    scheduleReminders();
+    showToast('✅ Lembretes ativados! Você será avisado 2h e 30min antes.','ok');
+    return;
+  }
+  Notification.requestPermission().then(function(perm){
+    if(perm==='granted'){
+      scheduleReminders();
+      showToast('✅ Lembretes ativados! Você será avisado 2h e 30min antes.','ok');
+    } else {
+      showToast('Permissão negada. Ative nas configurações do celular.','err');
+    }
   });
 }
 </script>
