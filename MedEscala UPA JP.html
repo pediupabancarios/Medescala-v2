@@ -33,7 +33,7 @@ button,input,select,textarea{font-family:'Roboto',sans-serif}
 #MAIN{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
 #TB{height:var(--th);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:100}
 #CONT{flex:1;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
-#BN{display:none;background:var(--sf);border-top:1px solid var(--bd);flex-shrink:0}
+#BN{display:none;background:#ffffff;border-top:none;flex-shrink:0;box-shadow:0 -1px 0 rgba(0,0,0,.06),0 -6px 24px rgba(0,0,0,.07)}
 #OVL{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:150}
 .sb-logo{padding:16px 14px 11px;border-bottom:1px solid var(--bd)}
 .sb-logo h1{font-family:\'Montserrat\',sans-serif;font-size:18px;font-weight:700}
@@ -80,10 +80,19 @@ button,input,select,textarea{font-family:'Roboto',sans-serif}
 .npi.ur{border-left:3px solid var(--bl)}
 .npi p{font-size:12px;color:var(--tx);line-height:1.4}
 .npi time{font-size:10px;color:var(--tx3);font-family:\'Roboto Mono\',monospace;margin-top:3px;display:block}
-.bn-w{display:flex;height:var(--bh);padding-bottom:var(--sib)}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--tx3);font-size:9.5px;font-weight:500;border:none;background:none;transition:color .14s;padding:0}
-.bni .ic{font-size:18px}
-.bni.active{color:var(--bl)}
+.bn-w{display:flex;height:68px;padding-bottom:var(--sib);align-items:stretch;position:relative}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:#9eaab8;font-size:9.5px;font-weight:600;border:none;background:none;transition:color .18s;padding:0;position:relative;letter-spacing:.2px}
+.bni .ic{font-size:20px;line-height:1;transition:transform .18s}
+.bni:hover .ic{transform:translateY(-1px)}
+.bni.active{color:#0077b6}
+.bni.active .ic{transform:translateY(-1px)}
+.bni.active::after{content:'';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#0077b6}
+.bni.fab-center{color:#fff}
+.bni.fab-center .ic{font-size:22px;background:linear-gradient(135deg,#0077b6,#00b4d8);width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,119,182,.38),inset 0 1px 0 rgba(255,255,255,.2);transition:transform .18s,box-shadow .18s;margin-bottom:1px}
+.bni.fab-center:hover .ic{transform:translateY(-2px) scale(1.05);box-shadow:0 10px 28px rgba(0,119,182,.48)}
+.bni.fab-center .lbl{color:#0077b6;font-weight:700}
+.bni.fab-center.active .ic{background:linear-gradient(135deg,#01579b,#0077b6)}
+.bni.fab-center::after{display:none}
 .page{animation:fi .2s ease}
 @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .ph{margin-bottom:20px}
@@ -341,7 +350,7 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 #OVL.on{display:block}
 #BN{display:block}
 .btn-menu{display:flex}
-#CONT{padding:12px;padding-bottom:calc(var(--bh) + var(--sib) + 12px)}
+#CONT{padding:12px;padding-bottom:calc(68px + var(--sib) + 12px)}
 .sg{grid-template-columns:1fr 1fr}
 .fr{grid-template-columns:1fr}
 .dcg{grid-template-columns:1fr 1fr}
@@ -1686,11 +1695,24 @@ function buildSB(){
   nav.innerHTML=h;
 }
 function buildBN(){
-  var items=[{id:'dashboard',ic:'📊',lb:'Início'},{id:'calendar',ic:'📅',lb:'Escala'},{id:'myshifts',ic:'🏥',lb:'Plantão'},{id:'board',ic:'📢',lb:'Mural'},{id:'exchanges',ic:'🔄',lb:'Trocas'}];
-  items.push({id:'chat',ic:'💬',lb:'Chat'});
-  items.push({id:'avisos',ic:'📣',lb:'Avisos'});
-  if(isG())items.push({id:'ms',ic:'⚙️',lb:'Admin'});
-  G('BNW').innerHTML=items.map(function(i){return'<button class="bni" id="BNI-'+i.id+'" onclick="goTo(\''+i.id+'\')" ><span class="ic">'+i.ic+'</span>'+i.lb+'</button>';}).join('');
+  // 5 fixed items: Início | Escala | [Plantão — FAB center] | Mural | Trocas
+  var base=[
+    {id:'dashboard', ic:'🏠', lb:'Início'},
+    {id:'calendar',  ic:'📅', lb:'Escala'},
+    {id:'myshifts',  ic:'🏥', lb:'Plantão', fab:true},
+    {id:'board',     ic:'📢', lb:'Mural'},
+    {id:'exchanges', ic:'🔄', lb:'Trocas'}
+  ];
+  var items = isG()
+    ? [{id:'dashboard',ic:'🏠',lb:'Início'},{id:'calendar',ic:'📅',lb:'Escala'},{id:'myshifts',ic:'🏥',lb:'Plantão',fab:true},{id:'ms',ic:'⚙️',lb:'Admin'},{id:'rep',ic:'📈',lb:'Relatórios'}]
+    : base;
+  G('BNW').innerHTML=items.map(function(i){
+    var cls='bni'+(i.fab?' fab-center':'');
+    return '<button class="'+cls+'" id="BNI-'+i.id+'" onclick="goTo(''+i.id+'')">'
+      +'<span class="ic">'+i.ic+'</span>'
+      +'<span class="lbl">'+i.lb+'</span>'
+      +'</button>';
+  }).join('');
 }
 function goTo(pg){
   curPg=pg;var it=navItems().find(function(i){return i.id===pg;});
