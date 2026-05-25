@@ -343,8 +343,12 @@ body.light{
   background:linear-gradient(135deg,#01579b 0%,#0277bd 50%,#0288d1 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity .5s ease,transform .5s ease;
+  animation:splashAutohide 0s 4s forwards;
 }
-#SPLASH.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
+@keyframes splashAutohide{
+  to{opacity:0;transform:scale(1.04);pointer-events:none;visibility:hidden;}
+}
+#SPLASH.hide{opacity:0;transform:scale(1.05);pointer-events:none;visibility:hidden;animation:none;}
 .splash-logo{
   width:100px;height:100px;border-radius:24px;
   background:rgba(255,255,255,.15);
@@ -600,7 +604,7 @@ function registerServiceWorker(){
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
   <div class="splash-version">v2.0 · 2026</div>
 </div>
-<div id="APP" style="display:none">
+<div id="APP" style="display:flex">
   <div id="OVL"></div>
   <aside id="SB">
     <div class="sb-logo"><h1>🏥 MedEscala</h1><small>UPA Pediátrica · JP</small></div>
@@ -1376,7 +1380,6 @@ function boot(){
       var doc=DOCS.find(function(d){return d.login===sess.login;});
       if(doc){
         CU=doc;
-        G('APP').style.display='flex';
         initApp(); // hides splash inside initApp
         return;
       }
@@ -1478,7 +1481,7 @@ function doLogout(){
   disconnectRealtime();
   CU=null;clearInterval(clockT);clearInterval(shiftT);clearInterval(syncT);
   try{localStorage.removeItem(SESS_KEY);}catch(e){}
-  G('APP').style.display='none';G('LS').classList.add('on');G('LIP').value='';
+  G('LS').classList.add('on');G('LIP').value='';
 }
 
 /* ── INIT ── */
