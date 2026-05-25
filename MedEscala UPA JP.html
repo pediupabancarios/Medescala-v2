@@ -1368,7 +1368,22 @@ function boot(){
   initTheme();
   registerServiceWorker();
   try{var cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'{}');if(cfg.url&&cfg.key){SURL=cfg.url;SKEY=cfg.key;}}catch(e){}
-  if(!SURL||!SKEY){showSetup();return;}
+  if(!SURL||!SKEY){hideSplashOnce();showSetup();return;}
+  // Try auto-login from saved session
+  try{
+    var sess=JSON.parse(localStorage.getItem(SESS_KEY)||'{}');
+    if(sess.login){
+      var doc=DOCS.find(function(d){return d.login===sess.login;});
+      if(doc){
+        CU=doc;
+        G('APP').style.display='flex';
+        initApp(); // hides splash inside initApp
+        return;
+      }
+    }
+  }catch(e){}
+  // No saved session — show login
+  hideSplashOnce();
   G('LS').classList.add('on');
   // Show biometric button if available
   try{
@@ -2889,9 +2904,9 @@ function hideSplashOnce(){
   splashHidden=true;
   hideSplash();
 }
-window.addEventListener('load',function(){
-  setTimeout(hideSplashOnce, 3000); // max fallback
-});
+// Fallback: hide splash at most 3s after DOM ready, 2s after full load
+document.addEventListener('DOMContentLoaded',function(){setTimeout(hideSplashOnce,3000);});
+window.addEventListener('load',function(){setTimeout(hideSplashOnce,1500);});
 
 /* ══════════════════════════════════════════════
    LEMBRETES AUTOMÁTICOS — 2h antes do plantão
