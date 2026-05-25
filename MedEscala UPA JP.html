@@ -191,6 +191,7 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
 .pass-card{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.28);border-radius:10px;padding:13px;margin-bottom:9px}
 .pass-card h4{color:var(--or);font-size:13px;margin-bottom:5px}
 #TC{position:fixed;bottom:calc(var(--bh) + var(--sib) + 10px);left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:5px;align-items:center;pointer-events:none}
+@media(min-width:769px){#TC{bottom:20px}}
 .toast{background:var(--sf3);border:1px solid var(--bd2);color:var(--tx);padding:8px 16px;border-radius:24px;font-size:12.5px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:fi .2s ease}
 .toast.ok{border-color:rgba(93,219,138,.4);background:rgba(93,219,138,.08);color:var(--gn)}
 .toast.err{border-color:rgba(240,92,122,.4);background:rgba(240,92,122,.08);color:var(--rs)}
@@ -578,12 +579,9 @@ function registerServiceWorker(){
       <input type="password" id="LIP" placeholder="Ex: 11707" autocomplete="current-password" inputmode="numeric" style="background:rgba(255,255,255,.06)">
     </div>
     <button class="btn bp" id="LBTN" style="width:100%;justify-content:center;padding:12px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#01579b,#0277bd);box-shadow:0 4px 16px rgba(43,143,239,.4)">Entrar →</button>
-    <button id="BIOBTN" onclick="tryBiometricLogin()" style="display:none;width:100%;justify-content:center;padding:11px;margin-bottom:10px;background:rgba(43,143,239,.1);border:1px solid rgba(43,143,239,.3);border-radius:10px;color:var(--bl);font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:8px">🔐 Entrar com Face ID / Touch ID</button>
     <p style="font-size:12px;color:var(--tx2);text-align:center;margin-top:14px;line-height:1.8">Coordenador: <b style="color:var(--tx)">Dr. Rodrigo Cahuana Chipayo</b><br><span style="font-size:11px;color:var(--tx3)">CRM 11707/PB · UPA Pediátrica Bancários</span></p>
-    <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
-    <div id="BIOBTN" style="display:none;margin-top:8px"><button class="btn bgh" style="width:100%;justify-content:center;padding:10px;font-size:13px" onclick="loginWithBiometric()">🔐 Face ID / Digital</button></div>
     <div id="BIOBTN" style="display:none;margin-top:10px">
-      <button class="btn bgh" style="width:100%;justify-content:center;padding:11px;font-size:14px" onclick="loginWithBiometric()">🔐 Entrar com Face ID / Digital</button>
+      <button class="btn bgh" style="width:100%;justify-content:center;padding:11px;font-size:14px;display:flex;align-items:center;gap:8px" onclick="tryBiometricLogin()">🔐 Entrar com Face ID / Touch ID</button>
     </div>
     <button class="btn bgh sm" style="width:100%;justify-content:center;margin-top:10px;font-size:11px" onclick="showSetup()">⚙️ Reconfigurar banco de dados</button>
   </div>
@@ -1117,17 +1115,6 @@ function showSetup(){
   G('SETUP').classList.add('on');
 }
 
-/* ══ SERVICE WORKER ══ */
-function registerSW(){
-  if(!('serviceWorker' in navigator))return;
-  try{
-    var sw='self.addEventListener(\'install\',e=>{e.waitUntil(caches.open(\'ms-v2\').then(c=>fetch(self.location.href).then(r=>c.put(self.location.href,r)).catch(()=>{})).then(()=>self.skipWaiting()))});self.addEventListener(\'activate\',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==\'ms-v2\').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});self.addEventListener(\'fetch\',e=>{if(e.request.method!==\'GET\')return;if(e.request.url.includes(\'supabase.co\')){e.respondWith(fetch(e.request).catch(()=>new Response(\'[]\',{headers:{\'Content-Type\':\'application/json\'}})));return;}e.respondWith(fetch(e.request).then(r=>{if(r&&r.status===200){var cl=r.clone();caches.open(\'ms-v2\').then(c=>c.put(e.request,cl))}return r}).catch(()=>caches.match(e.request)))})';
-    var blob=new Blob([sw],{type:'application/javascript'});
-    navigator.serviceWorker.register(URL.createObjectURL(blob))
-      .then(function(){console.log('SW ok');}).catch(function(e){console.log('SW fail:',e);});
-  }catch(e){}
-}
-
 /* ══ REALTIME ══ */
 var realtimeWS=null;
 function connectRealtime(){
@@ -1388,9 +1375,9 @@ function boot(){
     if(window.PublicKeyCredential){
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(ok){
         var stored={};
-        try{stored=JSON.parse(localStorage.getItem(BIOMETRIC_KEY||'mes_biometric')||'{}');}catch(e){}
+        try{stored=JSON.parse(localStorage.getItem(BIOMETRIC_KEY)||'{}');}catch(e){}
         var btn=G('BIOBTN');
-        if(btn&&ok&&stored.login){btn.style.display='flex';}
+        if(btn&&ok&&stored.login){btn.style.display='block';}
       }).catch(function(){});
     }
   }catch(e){}
@@ -1490,9 +1477,9 @@ function initApp(){
   }
   buildSB();buildBN();startClk();updateNBadge();
   goTo(isG()?'dashboard':'calendar');checkPWA();
+  hideSplashOnce();
   // Sync in background — UI already showing
   initRealtime();
-  connectRealtime();
   doSync().then(function(){
     var fresh=ST.docs.find(function(d){return d.id===CU.id;});
     if(fresh){CU=fresh;}
@@ -1555,8 +1542,8 @@ function markAllRead(){ST.notifs.forEach(function(n){if(n.readBy.indexOf(CU.id)=
 
 /* ── NAV ── */
 function navItems(){
-  var b=[{id:'dashboard',ic:'📊',lb:'Dashboard'},{id:'calendar',ic:'📅',lb:'Escala Geral'},{id:'myshifts',ic:'🏥',lb:'Meu Plantão'},{id:'board',ic:'📢',lb:'Mural de Plantões'},{id:'exchanges',ic:'🔄',lb:'Trocas & Repassses'},{id:'avisos',ic:'📣',lb:'Avisos'},{id:'chat',ic:'💬',lb:'Chat'},{id:'horas',ic:'⏱️',lb:'Banco de Horas'},{id:'perfil',ic:'👤',lb:'Meu Perfil'},{id:'instalar',ic:'📲',lb:'Instalar App'},{id:'instalar',ic:'📲',lb:'Instalar App'},{id:'agora',ic:'🟢',lb:'Plantão Agora'},{id:'ocorrencias',ic:'🚨',lb:'Ocorrências'},{id:'importar',ic:'📥',lb:'Importar Plantões'},{id:'passagens',ic:'📋',lb:'Passagens'}];
-  if(isG())b.push({id:'ms',ic:'📋',lb:'Gerenciar Plantões',sec:'Admin'},{id:'mm',ic:'🗓️',lb:'Meses'},{id:'md',ic:'👨‍⚕️',lb:'Plantonistas'},{id:'geo',ic:'📍',lb:'Localização UPA'},{id:'rep',ic:'📈',lb:'Relatórios'},{id:'lg',ic:'📝',lb:'Log'},{id:'avisos',ic:'📣',lb:'Avisos'},{id:'ocorrencias',ic:'🚨',lb:'Ocorrências'},{id:'importar',ic:'📥',lb:'Importar Plantões'},{id:'passagens',ic:'📋',lb:'Passagens'});
+  var b=[{id:'dashboard',ic:'📊',lb:'Dashboard'},{id:'calendar',ic:'📅',lb:'Escala Geral'},{id:'myshifts',ic:'🏥',lb:'Meu Plantão'},{id:'board',ic:'📢',lb:'Mural de Plantões'},{id:'exchanges',ic:'🔄',lb:'Trocas & Repassses'},{id:'avisos',ic:'📣',lb:'Avisos'},{id:'chat',ic:'💬',lb:'Chat'},{id:'horas',ic:'⏱️',lb:'Banco de Horas'},{id:'perfil',ic:'👤',lb:'Meu Perfil'},{id:'instalar',ic:'📲',lb:'Instalar App'},{id:'agora',ic:'🟢',lb:'Plantão Agora'},{id:'ocorrencias',ic:'🚨',lb:'Ocorrências'},{id:'importar',ic:'📥',lb:'Importar Plantões'},{id:'passagens',ic:'📋',lb:'Passagens'}];
+  if(isG())b.push({id:'ms',ic:'📋',lb:'Gerenciar Plantões',sec:'Admin'},{id:'mm',ic:'🗓️',lb:'Meses'},{id:'md',ic:'👨‍⚕️',lb:'Plantonistas'},{id:'geo',ic:'📍',lb:'Localização UPA'},{id:'rep',ic:'📈',lb:'Relatórios'},{id:'lg',ic:'📝',lb:'Log'});
   return b;
 }
 function buildSB(){
@@ -2156,7 +2143,7 @@ function pgAvisos(){
         +'<p style="font-size:13px;color:var(--tx2);line-height:1.6">'+a.msg+'</p>'
         +'<time style="font-size:11px;color:var(--tx3);font-family:\'Roboto Mono\',monospace;margin-top:8px;display:block">'+fT(a.ts)+' — Dr. Rodrigo Cahuana</time>'
         +'</div>'
-        +(isG()?'<button class="btn bgh xs" style="color:var(--rs);flex-shrink:0" onclick="delAviso(\'+a.id+\')">🗑</button>':'')
+        +(isG()?'<button class="btn bgh xs" style="color:var(--rs);flex-shrink:0" onclick="delAviso(\''+a.id+'\')">🗑</button>':'')
         +'</div></div>';
     });
   }
@@ -2521,7 +2508,7 @@ function pgOcorrencias(){
         +'</div>'
         +'<p style="font-size:13px;color:var(--tx);margin-bottom:6px">'+o.desc+'</p>'
         +(o.conduta?'<p style="font-size:12px;color:var(--tx2)">✅ Conduta: '+o.conduta+'</p>':'')
-        +(isG()?'<button class="btn bgh xs" style="color:var(--rs);margin-top:8px" onclick="delOcorrencia(\'+o.id+\')">🗑 Excluir</button>':'')
+        +(isG()?'<button class="btn bgh xs" style="color:var(--rs);margin-top:8px" onclick="delOcorrencia(\''+o.id+'\')">🗑 Excluir</button>':'')
         +'</div>';
     });
     h+='</div>';
@@ -2570,7 +2557,7 @@ function modalPassagem(shiftId){
     +'</div>'
     +'<div class="mft">'
     +'<button class="btn bgh sm" onclick="closeModal()">Cancelar</button>'
-    +'<button class="btn br sm" onclick="doPassagem(\'+shiftId+\')">✅ Finalizar Plantão</button>'
+    +'<button class="btn br sm" onclick="doPassagem(\''+shiftId+'\')">✅ Finalizar Plantão</button>'
     +'</div>');
 }
 function doPassagem(id){
@@ -2719,50 +2706,6 @@ function pgPassagemHist(){
   G('CONT').innerHTML=h;
 }
 
-function showDay(dateStr){
-  var shifts=ST.shifts.filter(function(s){return s.date===dateStr;});
-  var d=new Date(dateStr+'T12:00:00');
-  var dayFmt=d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-  dayFmt=dayFmt.charAt(0).toUpperCase()+dayFmt.slice(1);
-  var h='<div class="mh"><h3>'+dayFmt+'</h3><button class="mcl" onclick="closeModal()">X</button></div>'
-    +'<div class="mbd">';
-  if(!shifts.length){
-    h+='<div style="text-align:center;padding:28px"><div style="font-size:40px;margin-bottom:12px">No shifts</div>'
-      +'<p style="color:var(--tx2)">Nenhum plantao neste dia</p></div>';
-  } else {
-    var grupos=[
-      {t:'D',lbl:'Diurno',hr:'07:00 - 19:00',bg:'rgba(180,83,9,.1)',brd:'rgba(180,83,9,.25)'},
-      {t:'d',lbl:'Extra Diurno',hr:'07:00 - 19:00',bg:'rgba(180,83,9,.07)',brd:'rgba(180,83,9,.18)'},
-      {t:'N',lbl:'Noturno',hr:'19:00 - 07:00',bg:'rgba(29,111,164,.1)',brd:'rgba(29,111,164,.25)'},
-      {t:'n',lbl:'Extra Noturno',hr:'19:00 - 07:00',bg:'rgba(29,111,164,.07)',brd:'rgba(29,111,164,.18)'}
-    ];
-    grupos.forEach(function(g){
-      var grp=shifts.filter(function(s){return s.type===g.t;});
-      if(!grp.length)return;
-      h+='<div style="background:'+g.bg+';border:1px solid '+g.brd+';border-radius:12px;padding:14px;margin-bottom:12px">'
-        +'<b style="font-size:14px">'+g.lbl+'</b>'
-        +'<span style="font-size:11px;color:var(--tx2);margin-left:8px">'+g.hr+'</span>';
-      grp.forEach(function(s){
-        var doc=dBy(s.docId);if(!doc)return;
-        var isActive=s.status==='active';
-        var isMine=s.docId===CU.id;
-        h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);margin-top:8px">'
-          +avH(doc,38)
-          +'<div style="flex:1"><b style="font-size:13px;display:block">'+doc.name+'</b>'
-          +'<span style="font-size:11px;color:var(--tx2)">CRM '+doc.crm+'/PB</span></div>'
-          +(isActive?'<span class="bdg active" style="font-size:10px">Ativo</span>':'')
-          +(isMine&&s.status==='open'?'<span class="bdg open" style="font-size:10px">Seu plantao</span>':'')
-          +(isG()&&s.status==='open'?'<button class="btn bt xs" style="font-size:10px;padding:3px 8px" onclick="admStartShift(\''+s.id+'\');closeModal()">▶ Iniciar</button>':'')
-          +(isG()&&s.status==='active'?'<button class="btn br xs" style="font-size:10px;padding:3px 8px" onclick="admCloseShift(\''+s.id+'\');closeModal()">■ Fechar</button>':'')
-          +'</div>';
-      });
-      h+='</div>';
-    });
-  }
-  h+='</div>';
-  openModal(h);
-}
-
 /* ══ GESTOR: Iniciar/Fechar plantão de qualquer plantonista ══ */
 function admStartShift(id){
   if(!isG())return;
@@ -2862,9 +2805,15 @@ function hideSplash(){
   sp.classList.add('hide');
   setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},600);
 }
-// Hide splash after load completes (max 2.5s)
+// Hide splash after app is ready (triggered by initApp) or after max 3s
+var splashHidden=false;
+function hideSplashOnce(){
+  if(splashHidden)return;
+  splashHidden=true;
+  hideSplash();
+}
 window.addEventListener('load',function(){
-  setTimeout(hideSplash, 2200);
+  setTimeout(hideSplashOnce, 3000); // max fallback
 });
 
 /* ══════════════════════════════════════════════
