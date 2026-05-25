@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+// Kill all Service Workers and caches immediately — prevents stale cache lockout
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(sw){sw.unregister();});});
+}
+if(window.caches){
+  caches.keys().then(function(k){k.forEach(function(n){caches.delete(n);});});
+}
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MedEscala">
@@ -481,16 +490,27 @@ function hasBiometric(){
 /* ═══ SERVICE WORKER ═══ */
 function registerServiceWorker(){
   if(!('serviceWorker' in navigator))return;
+  // First: unregister ALL old service workers to clear stale cache
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(reg){reg.unregister();});
+  });
+  // Also clear all caches
+  if(window.caches){
+    caches.keys().then(function(keys){
+      keys.forEach(function(k){caches.delete(k);});
+    });
+  }
   var swCode=[
-    "const CACHE='medescala-v2';",
-    "self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(cache){return cache.addAll([self.location.pathname]);}));self.skipWaiting();});",
-    "self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));}));self.clients.claim();});",
-    "self.addEventListener('fetch',function(e){if(e.request.url.includes('supabase.co')){e.respondWith(fetch(e.request).catch(function(){return new Response('[]',{headers:{'Content-Type':'application/json'}});}));return;}e.respondWith(caches.match(e.request).then(function(cached){if(cached)return cached;return fetch(e.request).then(function(r){if(r.ok){var cl=r.clone();caches.open(CACHE).then(function(c){c.put(e.request,cl);});}return r;}).catch(function(){return caches.match('/');});}));});"
+    "const CACHE='medescala-v3';",
+    "self.addEventListener('install',function(e){self.skipWaiting();});",
+    "self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));}));self.clients.claim();});",
+    // Network first — cache only as fallback for offline
+    "self.addEventListener('fetch',function(e){if(e.request.url.includes('supabase.co')){e.respondWith(fetch(e.request).catch(function(){return new Response('[]',{headers:{'Content-Type':'application/json'}});}));return;}e.respondWith(fetch(e.request).then(function(r){if(r&&r.ok&&r.status===200){var cl=r.clone();caches.open(CACHE).then(function(c){c.put(e.request,cl);});}return r;}).catch(function(){return caches.match(e.request);}));});"
   ].join('\n');
   var blob=new Blob([swCode],{type:'application/javascript'});
   var swUrl=URL.createObjectURL(blob);
   navigator.serviceWorker.register(swUrl).then(function(reg){
-    console.log('SW registered');
+    console.log('SW v3 registered');
   }).catch(function(e){console.warn('SW failed:',e);});
   window.addEventListener('offline',function(){setSyncUI('err','● Sem internet');showToast('📵 Modo offline ativo','info');});
   window.addEventListener('online',function(){setSyncUI('loading','Reconectando...');showToast('✅ Conexão restaurada!','ok');setTimeout(function(){syncing=false;doSync();},1000);});
