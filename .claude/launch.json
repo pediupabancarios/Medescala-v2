@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "medescala",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /Users/rodrigocahuana/Downloads/medescala-app-projeto && python3 -m http.server 8852"],
+      "port": 8852
+    }
+  ]
+}
