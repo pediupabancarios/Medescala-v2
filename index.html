@@ -1639,7 +1639,7 @@ function _requestNotifPermission_OLD(){if(!('Notification' in window))return;if(
 function sendBrowserNotif(title,body){if(!NOTIF_PERM||Notification.permission!=='granted')return;try{var n=new Notification(title,{body:body||'',vibrate:[200,100,200],tag:'medescala-'+Date.now()});n.onclick=function(){window.focus();n.close();};setTimeout(function(){n.close();},8000);}catch(e){}}
 
 var realtimeWS=null;
-function connectRealtime(){if(!SURL||!SKEY)return;if(realtimeWS&&realtimeWS.readyState===1)return;try{var wsUrl=SURL.replace('https://','wss://')+'/realtime/v1/websocket?apikey='+SKEY+'&vsn=1.0.0';realtimeWS=new WebSocket(wsUrl);realtimeWS.onopen=function(){realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_data',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_data'}]}},ref:'1'}));setSyncUI('ok','Tempo real ⚡');};realtimeWS.onmessage=function(evt){try{var data=JSON.parse(evt.data);if(data.event==='heartbeat'){realtimeWS.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}));return;}var rec=data.payload&&data.payload.data&&data.payload.data.record;if(rec&&rec.key&&rec.value){try{var val=JSON.parse(rec.value);if(Array.isArray(val)||typeof val==='object'){ST[rec.key]=val;markLoaded(rec.key,val);refreshPage();setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));}}catch(e){}}}catch(e){};};realtimeWS.onerror=function(){};realtimeWS.onclose=function(){setTimeout(function(){if(CU)connectRealtime();},5000);};}catch(e){}}
+function connectRealtime(){if(!SURL||!SKEY)return;if(realtimeWS&&realtimeWS.readyState===1)return;try{var wsUrl=SURL.replace('https://','wss://')+'/realtime/v1/websocket?apikey='+SKEY+'&vsn=1.0.0';realtimeWS=new WebSocket(wsUrl);realtimeWS.onopen=function(){realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_data',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_data'}]}},ref:'1'}));realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_shifts',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_shifts'}]}},ref:'2'}));setSyncUI('ok','Tempo real ⚡');};realtimeWS.onmessage=function(evt){try{var data=JSON.parse(evt.data);if(data.event==='heartbeat'){realtimeWS.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}));return;}var chg=data.payload&&data.payload.data;if(chg&&chg.table==='medescala_shifts'){applyShiftChange(chg);setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));return;}var rec=chg&&chg.record;if(rec&&rec.key&&rec.key!=='shifts'&&rec.value){try{var val=JSON.parse(rec.value);if(Array.isArray(val)||typeof val==='object'){ST[rec.key]=val;markLoaded(rec.key,val);snapAudit(rec.key,val);refreshPage();setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));}}catch(e){}}}catch(e){};};realtimeWS.onerror=function(){};realtimeWS.onclose=function(){setTimeout(function(){if(CU)connectRealtime();},5000);};}catch(e){}}
 function disconnectRealtime(){if(realtimeWS){try{realtimeWS.close();}catch(e){}realtimeWS=null;}}
 
 var BIO_KEY='mes_bio';
@@ -1877,14 +1877,74 @@ function uploadPhoto(){var inp=G('PHOTOINPUT');if(!inp||!inp.files[0])return;han
 function removePhoto(){var doc=ST.docs.find(function(d){return d.id===CU.id;});if(doc){delete doc.photo;delete CU.photo;}save('docs').then(function(){showToast('Foto removida');pgPerfil();});}
 
 function setSyncUI(state,msg){var dot=G('SDOT'),txt=G('STXT'),bar=G('SYNCBAR');if(!dot)return;dot.className='sdot '+(state==='ok'?'on':state==='err'?'err':'loading');if(txt)txt.textContent=msg;if(bar){bar.className='';if(state==='ok')bar.classList.add('ok');if(state==='err')bar.classList.add('err');}}
-function doSync(){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setSyncUI('err','Banco não configurado');return Promise.resolve();}syncing=true;setSyncUI('loading','Sincronizando...');var keys=['docs','shifts','months','exchanges','notifs','log','avisos','msgs','ocorrencias'];return Promise.all(keys.map(function(k){return sbGet(k).then(function(v){markLoaded(k,v);if(v!==null&&v!==undefined){if(Array.isArray(v))ST[k]=v;else if(typeof v==='object')ST[k]=v;}}).catch(function(e){console.warn('Sync key failed:',k);})})).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));updateNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
+function doSync(){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setSyncUI('err','Banco não configurado');return Promise.resolve();}syncing=true;setSyncUI('loading','Sincronizando...');var keys=['docs','months','exchanges','notifs','log','avisos','msgs','ocorrencias'];return Promise.all(keys.map(function(k){return sbGet(k).then(function(v){markLoaded(k,v);if(v!==null&&v!==undefined){if(Array.isArray(v))ST[k]=v;else if(typeof v==='object')ST[k]=v;}}).catch(function(e){console.warn('Sync key failed:',k);})}).concat([sbGetShifts().then(function(arr){ST.shifts=arr;snapShifts(arr);markLoaded('shifts',arr);}).catch(function(e){console.warn('Sync shifts failed');})])).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});snapAuditAll();setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));updateNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
 var LOADED={},LOADEDLEN={};
 function markLoaded(k,v){LOADED[k]=true;LOADEDLEN[k]=Array.isArray(v)?v.length:0;}
+
+/* ══ Plantões: uma linha por plantão (tabela medescala_shifts) — gravação só do que mudou ══ */
+var SHIFTS_SNAP={};
+function sbGetShifts(){return fetch(SURL+'/rest/v1/medescala_shifts?select=data&order=date.asc,id.asc&limit=20000',{method:'GET',headers:sbH()}).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.json();}).then(function(rows){return rows.map(function(x){var d=x.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){d=null;}}return d;}).filter(function(d){return d&&d.id;});});}
+function snapShifts(arr){SHIFTS_SNAP={};arr.forEach(function(s){SHIFTS_SNAP[s.id]=JSON.stringify(s);});}
+function actorLabel(){return CU?(CU.name+' ['+CU.id+']'):'sistema';}
+function saveShifts(){
+  var cur=ST.shifts||[],ups=[],seen={};
+  cur.forEach(function(s){seen[s.id]=1;if(SHIFTS_SNAP[s.id]!==JSON.stringify(s))ups.push(s);});
+  var dels=Object.keys(SHIFTS_SNAP).filter(function(id){return!seen[id];});
+  if(!ups.length&&!dels.length)return Promise.resolve();
+  var total=Object.keys(SHIFTS_SNAP).length,force=false;
+  if(dels.length>Math.max(40,Math.floor(total/4))){
+    if(!confirm('⚠️ Esta ação vai APAGAR '+dels.length+' de '+total+' plantões. Confirmar?')){showToast('Gravação cancelada — nada foi alterado.','info');syncing=false;doSync();return Promise.resolve();}
+    force=true;
+  }
+  var body=JSON.stringify({p_upserts:ups,p_deletes:dels,p_actor:actorLabel(),p_force:force});
+  function send(){return fetch(SURL+'/rest/v1/rpc/medescala_save_shifts',{method:'POST',headers:sbH(),body:body}).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.json();});}
+  return send().catch(function(){return send();}).then(function(){
+    ups.forEach(function(s){SHIFTS_SNAP[s.id]=JSON.stringify(s);});
+    dels.forEach(function(id){delete SHIFTS_SNAP[id];});
+  },function(e){showToast('⛔ Falha ao salvar plantões — '+(String(e&&e.message||'').indexOf('Remoção em massa')>-1?'remoção em massa bloqueada':'tente de novo')+'.','err');});
+}
+function applyShiftChange(ch){
+  var t=ch.type||ch.eventType,rec=ch.record,old=ch.old_record;
+  if(t==='DELETE'){var did=old&&old.id;if(!did)return;ST.shifts=ST.shifts.filter(function(x){return x.id!==did;});delete SHIFTS_SNAP[did];}
+  else if(rec){
+    var d=rec.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(e){return;}}
+    if(!d||!d.id)return;
+    var i=ST.shifts.findIndex(function(x){return x.id===d.id;});
+    if(i<0)ST.shifts.push(d);
+    else if(JSON.stringify(ST.shifts[i])===SHIFTS_SNAP[d.id])ST.shifts[i]=d;
+    else return;
+    SHIFTS_SNAP[d.id]=JSON.stringify(d);
+  }else return;
+  refreshPage();
+}
+
+/* ══ Histórico das demais chaves (docs, trocas, avisos, ocorrências, meses) ══ */
+var AUDIT_KEYS=['docs','exchanges','avisos','ocorrencias','months'],AUDIT_SNAP={};
+function auditId(k,x){return k==='months'?x.month:x.id;}
+function auditClean(k,x){if(k==='docs'&&x&&x.photo){var c=Object.assign({},x);c.photo='[foto]';return c;}return x;}
+function snapAudit(k,arr){if(AUDIT_KEYS.indexOf(k)<0||!Array.isArray(arr))return;var m={};arr.forEach(function(x){var id=auditId(k,x);if(id!==undefined&&id!==null)m[id]=JSON.stringify(auditClean(k,x));});AUDIT_SNAP[k]=m;}
+function snapAuditAll(){AUDIT_KEYS.forEach(function(k){snapAudit(k,ST[k]);});}
+function auditAfterSave(key){
+  if(AUDIT_KEYS.indexOf(key)<0||!AUDIT_SNAP[key])return;
+  var old=AUDIT_SNAP[key],rows=[],seen={};
+  (ST[key]||[]).forEach(function(x){
+    var id=auditId(key,x);if(id===undefined||id===null)return;seen[id]=1;
+    var j=JSON.stringify(auditClean(key,x));
+    if(old[id]===undefined)rows.push({action:'create',entity:key,entity_id:String(id),after:JSON.parse(j)});
+    else if(old[id]!==j)rows.push({action:'update',entity:key,entity_id:String(id),before:JSON.parse(old[id]),after:JSON.parse(j)});
+  });
+  Object.keys(old).forEach(function(id){if(!seen[id])rows.push({action:'delete',entity:key,entity_id:String(id),before:JSON.parse(old[id])});});
+  snapAudit(key,ST[key]);
+  if(!rows.length)return;
+  fetch(SURL+'/rest/v1/rpc/medescala_log_audit',{method:'POST',headers:sbH(),body:JSON.stringify({p_actor:actorLabel(),p_rows:rows.slice(0,200)})}).catch(function(){});
+}
+
 function save(key){
   if(!LOADED[key]){console.warn('save bloqueado (chave não sincronizada):',key);showToast('⛔ Dados ainda não sincronizados — nada foi salvo, para proteger o banco. Recarregue a página.','err');return Promise.resolve();}
+  if(key==='shifts')return saveShifts();
   var n=Array.isArray(ST[key])?ST[key].length:0,antes=LOADEDLEN[key]||0;
   if(antes>=30&&n<antes*0.5&&!confirm('⚠️ Esta ação vai reduzir "'+key+'" de '+antes+' para '+n+' registros. Confirmar?')){showToast('Gravação cancelada — nada foi alterado.','info');return Promise.resolve();}
-  return sbUpsert(key,ST[key]).catch(function(e){return sbUpsert(key,ST[key]);}).then(function(){LOADEDLEN[key]=n;},function(e){showToast('⛔ Falha ao salvar "'+key+'" — tente de novo.','err');});
+  return sbUpsert(key,ST[key]).catch(function(e){return sbUpsert(key,ST[key]);}).then(function(){LOADEDLEN[key]=n;auditAfterSave(key);},function(e){showToast('⛔ Falha ao salvar "'+key+'" — tente de novo.','err');});
 }
 function saveAll(){return Promise.all(['docs','shifts','months','exchanges','notifs','log','avisos','msgs','ocorrencias'].map(function(k){return save(k);}));}
 function addLog(msg){ST.log.unshift({id:uid(),ts:Date.now(),msg:msg});if(ST.log.length>200)ST.log=ST.log.slice(0,200);save('log');}
@@ -2138,6 +2198,7 @@ function initApp(){
   doSync().then(function(){
     var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;
     refreshPage();
+    if(isG())setTimeout(checkBackupHealth,2500);
   });
   clearInterval(syncT);syncT=setInterval(function(){if(!syncing&&SAFE_REFRESH_SKIP.indexOf(curPg)<0)doSync();},30000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&!syncing&&SAFE_REFRESH_SKIP.indexOf(curPg)<0)doSync();});
@@ -3484,8 +3545,95 @@ function pgRep(){
   h+='</tbody></table></div></div></div>';
   G('CONT').innerHTML=h;
 }
-function pgLG(){if(!isG())return;var h='<div class="page"><div class="ph"><h2>📝 Log</h2></div>';h+='<div class="card"><div class="ch"><h3>💾 Backup do Sistema</h3></div><div class="cb"><p style="font-size:12px;color:var(--tx2);margin-bottom:12px">Baixa um arquivo .json com todo o banco (médicos, plantões, meses, trocas, avisos, chat, ocorrências e log) — guarde em local seguro antes de mudanças grandes.</p><button class="btn bp sm" onclick="backupJSON()">⬇️ Baixar backup completo</button></div></div>';h+='<div class="card"><div class="ch"><h3>📋 Atividade recente</h3></div><div class="cb">';if(!ST.log.length)h+='<p style="color:var(--tx2);text-align:center;padding:20px">Nenhuma atividade</p>';else ST.log.slice(0,100).forEach(function(l){h+='<div class="log-item"><div class="log-dot"></div><div style="flex:1"><p>'+l.msg+'</p><time>'+fT(l.ts)+'</time></div></div>';});h+='</div></div></div>';G('CONT').innerHTML=h;}
-
+function pgLG(){if(!isG())return;
+  var h='<div class="page"><div class="ph"><h2>📝 Log</h2></div>';
+  h+='<div class="card"><div class="ch"><h3>💾 Backup do Sistema</h3></div><div class="cb">'
+    +'<p style="font-size:12px;color:var(--tx2);margin-bottom:12px">O servidor faz um backup automático todo dia às 03:00 (guarda 60 dias). Baixe também uma cópia para o seu computador/iCloud de vez em quando — é a proteção contra perda do projeto inteiro.</p>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn bp sm" onclick="backupJSON()">⬇️ Baixar backup completo</button>'
+    +'<button class="btn bgh sm" onclick="serverBackupNow()">☁️ Fazer backup no servidor agora</button></div>'
+    +'<div id="SRVBK" style="margin-top:14px"><p style="font-size:12px;color:var(--tx3)">Carregando backups do servidor…</p></div></div></div>';
+  h+='<div class="card"><div class="ch"><h3>🕘 Histórico de alterações</h3></div><div class="cb"><div id="AUDITLIST"><p style="font-size:12px;color:var(--tx3)">Carregando…</p></div></div></div>';
+  h+='<div class="card"><div class="ch"><h3>📋 Atividade recente</h3></div><div class="cb">';
+  if(!ST.log.length)h+='<p style="color:var(--tx2);text-align:center;padding:20px">Nenhuma atividade</p>';
+  else ST.log.slice(0,100).forEach(function(l){h+='<div class="log-item"><div class="log-dot"></div><div style="flex:1"><p>'+l.msg+'</p><time>'+fT(l.ts)+'</time></div></div>';});
+  h+='</div></div></div>';G('CONT').innerHTML=h;loadServerBackups();loadAudit(100);
+}
+function escA(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function loadServerBackups(){
+  fetch(SURL+'/rest/v1/medescala_backups?select=id,taken_at,kind,stats&order=taken_at.desc&limit=15',{headers:sbH()}).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(rows){
+    var el=G('SRVBK');if(!el)return;
+    if(!rows.length){el.innerHTML='<p style="font-size:12px;color:var(--tx3)">Nenhum backup no servidor ainda.</p>';return;}
+    el.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--bl);letter-spacing:.5px;margin-bottom:4px">☁️ BACKUPS NO SERVIDOR</div>'+rows.map(function(b){var st=b.stats||{};
+      return'<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px"><div style="flex:1">'+fT(b.taken_at)+' · '+(b.kind==='daily'?'automático':b.kind==='manual'?'manual':escA(b.kind))+'<div style="color:var(--tx3)">'+(st.plantoes||0)+' plantões · '+(st.medicos||0)+' médicos</div></div><button class="btn bgh xs" onclick="downloadServerBackup('+b.id+')">⬇ Baixar</button></div>';}).join('');
+  }).catch(function(){var el=G('SRVBK');if(el)el.innerHTML='<p style="font-size:12px;color:var(--rs)">Não consegui listar os backups do servidor.</p>';});
+}
+function downloadServerBackup(id){
+  fetch(SURL+'/rest/v1/medescala_backups?id=eq.'+id+'&select=taken_at,kind,data',{headers:sbH()}).then(function(r){return r.json();}).then(function(rows){
+    if(!rows[0]){showToast('Backup não encontrado','err');return;}
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(rows[0],null,1)],{type:'application/json;charset=utf-8'}));
+    a.download='MedEscala_Servidor_'+rows[0].taken_at.slice(0,16).replace(/[:T]/g,'-')+'.json';a.click();
+    try{localStorage.setItem('mes_lastbackup',String(Date.now()));}catch(e){}
+    showToast('✅ Backup baixado!','ok');
+  }).catch(function(){showToast('Não consegui baixar o backup','err');});
+}
+function serverBackupNow(){
+  fetch(SURL+'/rest/v1/rpc/medescala_take_backup',{method:'POST',headers:sbH(),body:JSON.stringify({p_kind:'manual'})}).then(function(r){if(!r.ok)return r.json().then(function(j){throw new Error(j.message||'erro');});return r.json();}).then(function(){showToast('✅ Backup feito no servidor!','ok');loadServerBackups();}).catch(function(e){showToast('⛔ '+e.message,'err');});
+}
+var AUDIT_LIMIT=100,AUDIT_ROWS=[];
+function loadAudit(limit){
+  AUDIT_LIMIT=limit;
+  fetch(SURL+'/rest/v1/medescala_audit?select=id,ts,actor,action,entity,entity_id,before,after&order=ts.desc&limit='+limit,{headers:sbH()}).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(rows){AUDIT_ROWS=rows;renderAudit();}).catch(function(){var el=G('AUDITLIST');if(el)el.innerHTML='<p style="font-size:12px;color:var(--rs)">Não consegui carregar o histórico.</p>';});
+}
+function auditDesc(a){
+  var s=a.after||a.before||{};
+  if(a.entity==='shift'){
+    var base=fD(s.date)+' '+sLbl(s.type)+' — '+dSN(s.docId);
+    if(a.action==='update'&&a.before&&a.after){
+      var ch=[];
+      if(a.before.docId!==a.after.docId)ch.push('médico '+dSN(a.before.docId)+' → '+dSN(a.after.docId));
+      if(a.before.type!==a.after.type)ch.push('turno '+sLbl(a.before.type)+' → '+sLbl(a.after.type));
+      if(a.before.date!==a.after.date)ch.push('data '+fD(a.before.date)+' → '+fD(a.after.date));
+      if(a.before.status!==a.after.status)ch.push('status '+a.before.status+' → '+a.after.status);
+      return'alterou plantão '+base+(ch.length?' ('+ch.join('; ')+')':'');
+    }
+    return(a.action==='create'?'criou':'apagou')+' plantão '+base;
+  }
+  var nm=s.name||s.title||s.desc||s.month||a.entity_id||'';
+  return(a.action==='create'?'criou':a.action==='delete'?'apagou':'alterou')+' '+a.entity+' · '+String(nm).slice(0,60);
+}
+function renderAudit(){
+  var el=G('AUDITLIST');if(!el)return;
+  if(!AUDIT_ROWS.length){el.innerHTML='<p style="font-size:12px;color:var(--tx3)">Nenhuma alteração registrada ainda.</p>';return;}
+  el.innerHTML=AUDIT_ROWS.map(function(a){
+    var canRestore=a.action==='delete'&&a.entity==='shift'&&a.before&&!ST.shifts.some(function(x){return x.id===a.before.id;});
+    return'<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12px"><div style="flex:1"><div>'+escA(auditDesc(a))+'</div><div style="color:var(--tx3);margin-top:2px">'+fT(a.ts)+' · '+escA(a.actor||'—')+'</div></div>'
+      +(canRestore?'<button class="btn bgh xs" onclick="auditRestore('+a.id+')">↩ Restaurar</button>':'')+'</div>';
+  }).join('')+(AUDIT_ROWS.length>=AUDIT_LIMIT?'<button class="btn bgh sm" style="margin-top:10px;width:100%" onclick="loadAudit('+(AUDIT_LIMIT+100)+')">Ver mais</button>':'');
+}
+function auditRestore(id){
+  var a=AUDIT_ROWS.find(function(x){return x.id===id;});if(!a||!a.before)return;
+  if(ST.shifts.some(function(x){return x.id===a.before.id;})){showToast('Esse plantão já existe.','info');return;}
+  if(!confirm('Restaurar o plantão '+fD(a.before.date)+' '+sLbl(a.before.type)+' — '+dSN(a.before.docId)+'?'))return;
+  ST.shifts.push(a.before);
+  save('shifts').then(function(){showToast('✅ Plantão restaurado!','ok');loadAudit(AUDIT_LIMIT);});
+}
+function checkBackupHealth(){
+  if(!isG()||!SURL)return;
+  try{if(sessionStorage.getItem('mes_bkbn_off'))return;}catch(e){}
+  fetch(SURL+'/rest/v1/medescala_backups?select=taken_at&order=taken_at.desc&limit=1',{headers:sbH()}).then(function(r){return r.ok?r.json():[];}).then(function(rows){
+    var msgs=[],last=rows[0]?new Date(rows[0].taken_at).getTime():0;
+    if(!last||Date.now()-last>48*3600*1000)msgs.push('o backup automático do servidor não roda há mais de 2 dias');
+    var loc=0;try{loc=parseInt(localStorage.getItem('mes_lastbackup')||'0',10);}catch(e){}
+    if(!loc||Date.now()-loc>14*86400000)msgs.push('você não baixa uma cópia para o seu computador há mais de 14 dias');
+    if(!msgs.length||G('BKBN'))return;
+    var b=document.createElement('div');b.id='BKBN';
+    b.style.cssText='position:fixed;left:12px;right:12px;bottom:84px;z-index:9998;background:#7c2d12;color:#fff;border-radius:14px;padding:12px 14px;font-size:13px;box-shadow:0 8px 28px rgba(0,0,0,.45);display:flex;gap:10px;align-items:center;flex-wrap:wrap';
+    b.innerHTML='<div style="flex:1;min-width:200px">⚠️ Atenção: '+msgs.join(' e ')+'.</div>'
+      +'<button class="btn bp sm" onclick="backupJSON();G(\'BKBN\').remove()">⬇️ Baixar agora</button>'
+      +'<button class="btn bgh sm" style="color:#fff" onclick="try{sessionStorage.setItem(\'mes_bkbn_off\',\'1\')}catch(e){}G(\'BKBN\').remove()">Depois</button>';
+    document.body.appendChild(b);
+  }).catch(function(){});
+}
 function backupJSON(){
   if(!isG())return;
   var payload={
@@ -3503,6 +3651,7 @@ function backupJSON(){
   a.href=URL.createObjectURL(blob);
   a.download='MedEscala_Backup_'+tdStr()+'.json';
   a.click();
+  try{localStorage.setItem('mes_lastbackup',String(Date.now()));}catch(e){}
   addLog('Backup do sistema baixado por '+(CU?CU.name:'—'));
   showToast('✅ Backup baixado!','ok');
 }
