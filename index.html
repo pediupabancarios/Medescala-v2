@@ -1582,7 +1582,8 @@ try{var _gs=JSON.parse(localStorage.getItem('upa_geo')||'{}');if(_gs.lat)UPA_LAT
 
 function G(id){return document.getElementById(id);}
 function uid(){return 'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
-function tdStr(){return new Date().toISOString().slice(0,10);}
+function tdStr(){var d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());} // data LOCAL (Brasília), não UTC
+function ymStr(d){return d.getFullYear()+'-'+p2(d.getMonth()+1);}
 function fD(d){var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 function fT(ts){var d=new Date(ts);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
 function p2(n){return String(n).padStart(2,'0');}
@@ -1670,7 +1671,7 @@ function buildDonut(D,N,d,n,size){size=size||120;var total=D+N+d+n||1;var r=size
 
 
 function exportEscalaExcel(){
-  var mStr=calMonth.toISOString().slice(0,7);
+  var mStr=ymStr(calMonth);
   var mName=calMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   var mCap=mName.charAt(0).toUpperCase()+mName.slice(1);
   var shifts=ST.shifts.filter(function(s){return s.date.startsWith(mStr);})
@@ -1725,7 +1726,7 @@ function exportEscalaExcel(){
 }
 
 function shareSchedule(){
-  var mStr=calMonth.toISOString().slice(0,7);
+  var mStr=ymStr(calMonth);
   var mName=calMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   var shifts=ST.shifts.filter(function(s){return s.date.startsWith(mStr);}).sort(function(a,b){return a.date.localeCompare(b.date);});
   if(!shifts.length){showToast('Nenhum plantão neste mês','err');return;}
@@ -1752,7 +1753,7 @@ function shareSchedule(){
 }
 
 function shareScheduleText(){
-  var mStr=calMonth.toISOString().slice(0,7);
+  var mStr=ymStr(calMonth);
   var mName=calMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   var shifts=ST.shifts.filter(function(s){return s.date.startsWith(mStr);}).sort(function(a,b){return a.date.localeCompare(b.date);});
   var text='Escala UPA Pediátrica JP\n'+mName.toUpperCase()+'\n'+'━'.repeat(20)+'\n';
@@ -1769,7 +1770,7 @@ function shareScheduleText(){
 }
 
 function exportEscalaVisual(){
-  var mStr=calMonth.toISOString().slice(0,7);
+  var mStr=ymStr(calMonth);
   var mName=calMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   mName=mName.charAt(0).toUpperCase()+mName.slice(1);
   var shifts=ST.shifts.filter(function(s){return s.date.startsWith(mStr);}).sort(function(a,b){return a.date.localeCompare(b.date)||a.type.localeCompare(b.type);});
@@ -2318,7 +2319,7 @@ function initSwipe(){
 function updateBNBadge(){
   if(!CU)return;
   var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
-  var tStr=tomorrow.toISOString().slice(0,10);
+  var tStr=dayStr(tomorrow);
   var hasT=ST.shifts.some(function(s){return s.docId===CU.id&&s.date===tStr&&s.status==='open';});
   var dot=G('BN_DOT_myshifts');
   if(dot)dot.classList.toggle('on',hasT);
@@ -4667,7 +4668,7 @@ function pgPerfil(){
 }
 function saveProfile(){var col=G('PROFCOLOR');var doc=ST.docs.find(function(d){return d.id===CU.id;});if(doc&&col){doc.color=col.value;doc.ini=mkIni(doc.name);CU.color=col.value;}save('docs').then(function(){showToast('✅ Perfil salvo!','ok');buildSB();});}
 
-function pgAgora(){var td=tdStr();var now=new Date();var hour=now.getHours();var isDiurno=(hour>=7&&hour<19);var activeShifts=ST.shifts.filter(function(s){return s.status==='active';});var todayShifts=ST.shifts.filter(function(s){if(s.date!==td)return false;return isDiurno?(s.type==='D'||s.type==='d'):(s.type==='N'||s.type==='n');});var h='<div class="page"><div class="ph"><h2>🟢 Plantão Agora</h2><p>'+(isDiurno?'☀️ Diurno 07:00–19:00':'🌙 Noturno 19:00–07:00')+' · '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</p></div>';if(activeShifts.length){h+='<div class="card"><div class="ch"><h3 style="color:var(--tl)">🟢 Ativos ('+activeShifts.length+')</h3></div><div class="cb">';activeShifts.forEach(function(s){var doc=dBy(s.docId);if(!doc)return;h+='<div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;margin-bottom:8px">'+avH(doc,44)+'<div style="flex:1"><b style="font-size:14px;display:block">'+doc.name+'</b><small style="color:var(--tx2)">'+sLbl(s.type)+'</small></div><span class="bdg active blink">● Ativo</span>'+(isG()?'<button class="btn br xs" onclick="admCloseShift(\''+s.id+'\')">■</button>':'')+'</div>';});h+='</div></div>';}h+='<div class="card"><div class="ch"><h3>📋 Escalados hoje ('+todayShifts.length+')</h3></div><div class="cb">';if(!todayShifts.length){h+='<p style="color:var(--tx2);text-align:center;padding:16px">Nenhum neste turno</p>';}todayShifts.forEach(function(s){var doc=dBy(s.docId);if(!doc)return;h+='<div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--sf2);border-radius:10px;margin-bottom:8px">'+avH(doc,40)+'<div style="flex:1"><b style="font-size:13px">'+doc.name+'</b></div>'+bSt(s.status)+'</div>';});h+='</div></div></div>';G('CONT').innerHTML=h;}
+function pgAgora(){var td=tdStr();var now=new Date();var hour=now.getHours();var isDiurno=(hour>=7&&hour<19);var refd=td;if(hour<7){var yy=new Date();yy.setDate(yy.getDate()-1);refd=dayStr(yy);}var activeShifts=ST.shifts.filter(function(s){return s.status==='active';});var todayShifts=ST.shifts.filter(function(s){if(s.date!==refd)return false;return isDiurno?(s.type==='D'||s.type==='d'):(s.type==='N'||s.type==='n');});var h='<div class="page"><div class="ph"><h2>🟢 Plantão Agora</h2><p>'+(isDiurno?'☀️ Diurno 07:00–19:00':'🌙 Noturno 19:00–07:00')+' · '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</p></div>';if(activeShifts.length){h+='<div class="card"><div class="ch"><h3 style="color:var(--tl)">🟢 Ativos ('+activeShifts.length+')</h3></div><div class="cb">';activeShifts.forEach(function(s){var doc=dBy(s.docId);if(!doc)return;h+='<div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;margin-bottom:8px">'+avH(doc,44)+'<div style="flex:1"><b style="font-size:14px;display:block">'+doc.name+'</b><small style="color:var(--tx2)">'+sLbl(s.type)+'</small></div><span class="bdg active blink">● Ativo</span>'+(isG()?'<button class="btn br xs" onclick="admCloseShift(\''+s.id+'\')">■</button>':'')+'</div>';});h+='</div></div>';}h+='<div class="card"><div class="ch"><h3>📋 Escalados hoje ('+todayShifts.length+')</h3></div><div class="cb">';if(!todayShifts.length){h+='<p style="color:var(--tx2);text-align:center;padding:16px">Nenhum neste turno</p>';}todayShifts.forEach(function(s){var doc=dBy(s.docId);if(!doc)return;h+='<div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--sf2);border-radius:10px;margin-bottom:8px">'+avH(doc,40)+'<div style="flex:1"><b style="font-size:13px">'+doc.name+'</b></div>'+bSt(s.status)+'</div>';});h+='</div></div></div>';G('CONT').innerHTML=h;}
 
 function pgOcorrencias(){if(!ST.ocorrencias)ST.ocorrencias=[];var mine=isG()?ST.ocorrencias:ST.ocorrencias.filter(function(o){return o.docId===CU.id;});var myActive=ST.shifts.find(function(s){return s.docId===CU.id&&s.status==='active';});var h='<div class="page"><div class="ph"><h2>🚨 Ocorrências</h2></div><div class="card"><div class="ch"><h3>+ Registrar</h3></div><div class="cb">';if(!myActive&&!isG()){h+='<div style="background:rgba(232,168,37,.1);border:1px solid rgba(232,168,37,.3);border-radius:9px;padding:12px;color:var(--gd);font-size:13px">⚠️ Inicie um plantão primeiro.</div>';}else{h+='<div class="fg"><label class="fl">Tipo</label><select id="OCTYPE"><option value="clinical">🏥 Clínica</option><option value="admin">📋 Administrativa</option><option value="equip">🔧 Equipamento</option><option value="security">🔒 Segurança</option><option value="other">📌 Outro</option></select></div><div class="fg"><label class="fl">Descrição</label><textarea id="OCMSG" placeholder="Descreva..." style="min-height:80px"></textarea></div><div class="fg"><label class="fl">Conduta</label><textarea id="OCCOND" placeholder="Conduta tomada..."></textarea></div><button class="btn br sm" onclick="doOcorrencia()">🚨 Registrar</button>';}h+='</div></div><div class="card"><div class="ch"><h3>📋 Histórico</h3></div><div class="cb">';if(!mine.length){h+='<p style="color:var(--tx2);text-align:center;padding:16px">Nenhuma registrada</p>';}else{mine.slice().reverse().forEach(function(o){var doc=dBy(o.docId);h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+(doc?avH(doc,24):'')+'<b style="font-size:12px">'+(doc?doc.name:'—')+'</b><time style="font-size:10px;color:var(--tx3);margin-left:auto">'+fT(o.ts)+'</time></div><p style="font-size:13px">'+o.desc+'</p>'+(o.conduta?'<p style="font-size:12px;color:var(--tx2);margin-top:4px">✅ '+o.conduta+'</p>':'')+'</div>';});}h+='</div></div></div>';G('CONT').innerHTML=h;}
 function doOcorrencia(){var tp=G('OCTYPE'),msg=G('OCMSG'),cond=G('OCCOND');if(!msg||!msg.value.trim()){showToast('Descreva a ocorrência.','err');return;}if(!ST.ocorrencias)ST.ocorrencias=[];var myActive=ST.shifts.find(function(s){return s.docId===CU.id&&s.status==='active';});ST.ocorrencias.push({id:uid(),docId:CU.id,shiftId:myActive?myActive.id:null,type:tp?tp.value:'other',desc:msg.value.trim(),conduta:cond?cond.value.trim():'',ts:Date.now()});save('ocorrencias').then(function(){addLog('Ocorrência: '+CU.name);pushNotif('🚨 Ocorrência por '+dSN(CU.id));pgOcorrencias();showToast('✅ Registrada!','ok');});}

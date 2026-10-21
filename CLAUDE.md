@@ -31,6 +31,8 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 - **Busca** (topo ou Cmd/Ctrl+K ou `/`): além de médicos e plantões acha telas e ações (`searchTargets`, sem acento; ações do gestor só aparecem para o gestor).
 - **Legibilidade**: nada abaixo de 10px fora dos modelos de impressão; bloco `<style id="ux-extra">` define alvos de toque (botões ≥38/44px) e campos com 16px no celular.
 
+- **Datas**: sempre horário **local** (Brasília). `tdStr()`/`dayStr()`/`ymStr()` usam getters locais — nunca `toISOString()` para 'hoje' (UTC vira o dia às 21h). Plantão noturno de madrugada pertence ao dia anterior (`pgAgora` usa o dia anterior antes das 07h).
+
 ## Dados: onde cada coisa mora (Supabase `ovkfrtozsyorosjymwoi`)
 - `medescala_shifts` — **uma linha por plantão** (`id, date, type, doc_id, data jsonb, updated_at, updated_by`). Fonte da verdade dos plantões. O app só **lê** a tabela; toda escrita passa pela função `medescala_save_shifts(p_upserts, p_deletes, p_actor, p_force)` (atômica, bloqueia remoção em massa > max(40, 25%) sem `p_force`).
 - `saveShifts()` no app grava **só o que mudou** (diff contra `SHIFTS_SNAP`). Por isso dois aparelhos editando plantões diferentes não se sobrescrevem mais.
