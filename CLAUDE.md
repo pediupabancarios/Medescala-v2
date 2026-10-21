@@ -20,6 +20,11 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 - **Máx. 2 plantonistas por turno e 4 por dia** (D/d = diurno, N/n = noturno), bloqueante: `checkDayLimit()` / `shiftPeriod()`. Todo fluxo que cria plantão deve chamá-la.
 - Tipos: D (07-19h), N (19-07h), d (Extra D), n (Extra N). Gestor CRM 11707 tem acesso total.
 
+## Navegação
+- Barra inferior **por perfil** (`bnItems()`): gestor = Início, Escala, Trocas (ponto vermelho se há trocas pendentes), Gerenciar, Mais; médico = Início, Meu Plantão, Escala, Trocas, Mais (ponto no Mais se há repasse aberto no Mural). O gesto de deslizar usa a mesma ordem.
+- **Mais** (`openMoreSheet()`) lista todas as telas fora da barra, agrupadas por `navItems()` (`sec`): Principal, Gestão, Administração, Conta, Ferramentas clínicas + Sair. Tela nova: adicione em `navItems()` (e em `GESTOR_ONLY` se for só do gestor).
+- Cada tela tem endereço `#/<pagina>` (`navPush`, `pageFromHash`, `pageAllowed`): botão voltar do celular/navegador funciona; com painel/menu aberto o voltar só fecha o painel; link direto vale depois do login; médico não abre tela de `GESTOR_ONLY`.
+
 ## Dados: onde cada coisa mora (Supabase `ovkfrtozsyorosjymwoi`)
 - `medescala_shifts` — **uma linha por plantão** (`id, date, type, doc_id, data jsonb, updated_at, updated_by`). Fonte da verdade dos plantões. O app só **lê** a tabela; toda escrita passa pela função `medescala_save_shifts(p_upserts, p_deletes, p_actor, p_force)` (atômica, bloqueia remoção em massa > max(40, 25%) sem `p_force`).
 - `saveShifts()` no app grava **só o que mudou** (diff contra `SHIFTS_SNAP`). Por isso dois aparelhos editando plantões diferentes não se sobrescrevem mais.
