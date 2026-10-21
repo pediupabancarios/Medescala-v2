@@ -43,6 +43,8 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 - Trocas/repasses (`exchanges`) guardam `fromDate/fromType/toDate/toType` além dos IDs dos plantões; telas usam `exInfo(e,'from'|'to')` (cai no ID só se faltar a data). `backfillExchDates()` completa registros antigos quando o plantão ainda existe.
 - Tempo real: `medescala_shifts` está na publicação `supabase_realtime`; o app trata INSERT/UPDATE/DELETE em `applyShiftChange`.
 
+- **Consumo de dados** (plano free: 5 GB/mês de saída): `doSync()` só pergunta as versões (`medescala_data.updated_at`, ~460 bytes) e baixa **apenas as chaves que mudaram**; plantões vêm do tempo real e são relidos por inteiro só no login, no botão Sync, na reconexão ou a cada 10 min (a cada 60s se o tempo real estiver fora). Fotos dos médicos ficam no bucket público `medescala-fotos` (`<docId>.jpg`) e `doc.photo` guarda só o endereço (`uploadFotoStorage`). Nunca gravar foto em base64 no cadastro.
+
 ## ⚠️ Proteção contra perda de dados (incidente 2026-10-17)
 O app já apagou ago/set/out ao gravar a escala de fábrica quando a leitura falhou. Regras:
 - `save(key)` só grava chave lida com sucesso na sessão (`LOADED`); chaves em `medescala_data` pedem confirmação se encolherem >50%.
