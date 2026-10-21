@@ -1,0 +1,11 @@
+{
+  "name": "medescala",
+  "private": true,
+  "description": "MedEscala — escala da UPA Pediátrica Bancários. App de arquivo único (index.html).",
+  "scripts": {
+    "test": "node tests/run-ci.js"
+  },
+  "devDependencies": {
+    "playwright": "1.49.1"
+  }
+}

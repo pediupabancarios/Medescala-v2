@@ -4988,7 +4988,10 @@ function ofDetectarMes(rows,headerIdx,ano){
     }
     if(ok)candidatos.push(mes);
   }
-  return candidatos;
+  // mês de 30 dias e mês de 31 dias que começam no mesmo dia da semana (ex.: setembro e dezembro de 2026) só se distinguem pelo nº de colunas de dia
+  var maxDay=Math.max.apply(null,Object.keys(dowByDay).map(Number));
+  var exatos=candidatos.filter(function(m){return new Date(ano,m,0).getDate()===maxDay;});
+  return exatos.length?exatos:candidatos;
 }
 function ofExtrairEntradas(rows,headerIdx){
   var header=rows[headerIdx]||[];

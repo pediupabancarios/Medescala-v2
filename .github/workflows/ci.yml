@@ -1,0 +1,21 @@
+name: Testes
+
+# Roda a cada Push e a cada Pull Request. Se falhar, aparece um X vermelho no commit no GitHub.
+on:
+  push:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar o navegador de teste
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+      - name: Rodar verificações e testes
+        run: node tests/run-ci.js

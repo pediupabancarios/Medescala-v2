@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>MedEscala — testes</title>
+<style>
+  body{font:14px/1.5 system-ui,sans-serif;margin:16px;background:#0b1f1a;color:#d1fae5}
+  h1{font-size:18px} .ok{color:#34d399} .fail{color:#f87171;white-space:pre-wrap} .skip{color:#fbbf24}
+  li{margin:2px 0;list-style:none} iframe{position:absolute;left:-9999px;width:420px;height:700px}
+  #resumo{font-weight:700;margin:10px 0}
+</style>
+</head>
+<body>
+<h1>MedEscala — testes automáticos</h1>
+<div id="resumo">rodando…</div>
+<ul id="lista"></ul>
+<script src="suite.js"></script>
+<script>
+/* Roda o app de verdade (index.html) em iframes isolados, com um servidor Supabase FALSO:
+   nenhum teste toca o banco real. Resultado final em window.__testResults. */
+var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms);});};
+var tests=[];
+function test(nome,fn){tests.push({nome:nome,fn:fn});}
+function eq(a,b,msg){var x=JSON.stringify(a),y=JSON.stringify(b);if(x!==y)throw new Error((msg?msg+': ':'')+'esperado '+y+' mas veio '+x);}
+function ok(c,msg){if(!c)throw new Error(msg||'condição falsa');}
+function skip(motivo){var e=new Error(motivo);e.skip=true;throw e;}
+
+async function newApp(){
+  var f=document.createElement('iframe');
+  f.src='../index.html?_t='+Math.random();
+  document.body.appendChild(f);
+  await new Promise(function(res,rej){f.onload=res;setTimeout(function(){rej(new Error('index.html não carregou'));},20000);});
+  await sleep(200);
+  var A=f.contentWindow;A.__frame=f;
+  A.confirm=function(){return true;};A.alert=function(){};
+  return A;
+}
+function mockDate(A,iso){
+  var R=A.Date,F=new R(iso).getTime();
+  A.Date=class extends R{constructor(){if(arguments.length===0)super(F);else super(...arguments);}static now(){return F;}};
+}
+/* Servidor Supabase falso: GET/PATCH em medescala_data, tabela de plantões e as funções (RPC) usadas pelo app */
+function makeServer(seed){
+  var S={data:Object.assign({docs:[],months:[],exchanges:[],notifs:[],log:[],msgs:[]},seed.data||{}),ver:{},shifts:(seed.shifts||[]).slice(),log:[],failShifts:false,failVersions:false,n:0};
+  function json(x,st){return new Response(JSON.stringify(x),{status:st||200,headers:{'Content-Type':'application/json'}});}
+  S.fetch=async function(url,opts){
+    var m=(opts&&opts.method)||'GET',u=String(url),path=(u.split('/rest/v1/')[1]||u.split('/storage/v1/')[1]||u);
+    S.log.push({m:m,p:path,b:opts&&opts.body,h:opts&&opts.headers});
+    if(m==='GET'&&path.indexOf('medescala_data?select=key,updated_at')===0){
+      if(S.failVersions)return new Response('x',{status:500});
+      return json(Object.keys(S.data).map(function(k){return{key:k,updated_at:S.ver[k]||'v1'};}));
+    }
+    var mm=path.match(/^medescala_data\?key=eq\.([a-z]+)&select=value/);
+    if(m==='GET'&&mm){if(!(mm[1] in S.data))return json([]);return json([{value:JSON.stringify(S.data[mm[1]])}]);}
+    if(m==='GET'&&path.indexOf('medescala_shifts')===0){if(S.failShifts)return new Response('boom',{status:500});return json(S.shifts.map(function(d){return{data:d};}));}
+    if(m==='POST'&&path==='rpc/medescala_save_shifts'){
+      var b=JSON.parse(opts.body);
+      b.p_upserts.forEach(function(s){var i=S.shifts.findIndex(function(x){return x.id===s.id;});if(i<0)S.shifts.push(s);else S.shifts[i]=s;});
+      S.shifts=S.shifts.filter(function(x){return b.p_deletes.indexOf(x.id)<0;});
+      return json({upserted:b.p_upserts.length,deleted:b.p_deletes.length});
+    }
+    var pm=path.match(/^medescala_data\?key=eq\.([a-z]+)/);
+    if(m==='PATCH'&&pm){S.data[pm[1]]=JSON.parse(JSON.parse(opts.body).value);S.ver[pm[1]]='v'+(++S.n+1);return json([{key:pm[1]}]);}
+    if(m==='POST'&&path.indexOf('rpc/')===0)return json(0);
+    if(m==='POST'&&path.indexOf('object/medescala-fotos/')===0)return json({Key:path});
+    return json([]);
+  };
+  S.writes=function(){return S.log.filter(function(x){return x.m!=='GET';});};
+  S.rpcSaves=function(){return S.log.filter(function(x){return x.p==='rpc/medescala_save_shifts';}).map(function(x){return JSON.parse(x.b);});};
+  return S;
+}
+function doc(id,name,crm,role){return{id:id,name:name,crm:crm,login:id,role:role||'plantonista',ini:name.slice(0,2).toUpperCase(),color:'#10b981'};}
+function shift(id,date,type,docId,status){return{id:id,date:date,type:type,docId:docId,sector:'UPA Pediátrica',obs:'',status:status||'open',createdAt:1};}
+var DOCS3=[doc('g1','Dr. Rodrigo Cahuana Chipayo','11707','gestor'),doc('m1','Dra. Ana Paula Gomes Sales','19099'),doc('m2','Dra. Raissa Delane Tebero Soares','13969')];
+function many(n,date,t,docId){var a=[];for(var i=0;i<n;i++)a.push(shift('x'+date+t+i,date,t,docId||'m1'));return a;}
+
+var H={test:test,eq:eq,ok:ok,skip:skip,newApp:newApp,mockDate:mockDate,makeServer:makeServer,sleep:sleep,doc:doc,shift:shift,DOCS3:DOCS3,many:many,
+  fonte:function(){return fetch('../index.html').then(function(r){return r.text();});}};
+SUITE(H);
+
+(async function(){
+  var res={passed:0,failed:0,skipped:0,total:tests.length,failures:[]},ul=document.getElementById('lista');
+  for(var i=0;i<tests.length;i++){
+    var t=tests[i],li=document.createElement('li');
+    try{await t.fn();res.passed++;li.className='ok';li.textContent='✓ '+t.nome;}
+    catch(e){
+      if(e&&e.skip){res.skipped++;li.className='skip';li.textContent='↷ '+t.nome+' (pulado: '+e.message+')';}
+      else{res.failed++;li.className='fail';li.textContent='✗ '+t.nome+'\n   '+(e&&e.message||e);res.failures.push({nome:t.nome,erro:String(e&&e.message||e)});}
+    }
+    ul.appendChild(li);
+    document.querySelectorAll('iframe').forEach(function(f){f.remove();});
+  }
+  document.getElementById('resumo').textContent=res.passed+' passaram · '+res.failed+' falharam · '+res.skipped+' pulados · '+res.total+' no total';
+  document.title=(res.failed?'FALHOU ':'OK ')+res.passed+'/'+res.total;
+  window.__testResults=res;
+})();
+</script>
+</body>
+</html>

@@ -20,6 +20,13 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 - **Máx. 2 plantonistas por turno e 4 por dia** (D/d = diurno, N/n = noturno), bloqueante: `checkDayLimit()` / `shiftPeriod()`. Todo fluxo que cria plantão deve chamá-la.
 - Tipos: D (07-19h), N (19-07h), d (Extra D), n (Extra N). Gestor CRM 11707 tem acesso total.
 
+## Testes automáticos
+- 28 testes em `tests/suite.js` rodam o **app de verdade** (`index.html` em iframes) contra um **banco Supabase falso** (`makeServer` em `tests/runner.html`) — nenhum teste toca o banco real. Cobrem os incidentes: escala apagada por falha de leitura, "hoje" em UTC, limite 2/turno, gravação só do que mudou, remoção em massa, sincronização leve, fotos no Storage, trocas com data, navegação/busca por perfil, planilha oficial (mês de 30 dias × dezembro) e abertura das 23 telas.
+- **No GitHub:** `.github/workflows/ci.yml` roda a cada Push (sintaxe dos scripts + testes no Chromium, fuso de Brasília). Falhou = X vermelho no commit.
+- **No navegador (sem Node):** servir a pasta (`.claude/launch.json`, porta 8852) e abrir `http://localhost:8852/tests/runner.html` — o título da aba mostra `OK 28/28`.
+- **Com Node:** `npm install --no-save playwright && npx playwright install chromium && node tests/run-ci.js`.
+- Todo bug novo: escreva o teste que o reproduz em `tests/suite.js` antes de corrigir.
+
 ## Navegação
 - Barra inferior **por perfil** (`bnItems()`): gestor = Início, Escala, Trocas (ponto vermelho se há trocas pendentes), Gerenciar, Mais; médico = Início, Meu Plantão, Escala, Trocas, Mais (ponto no Mais se há repasse aberto no Mural). O gesto de deslizar usa a mesma ordem.
 - **Mais** (`openMoreSheet()`) lista todas as telas fora da barra, agrupadas por `navItems()` (`sec`): Principal, Gestão, Administração, Conta, Ferramentas clínicas + Sair. Tela nova: adicione em `navItems()` (e em `GESTOR_ONLY` se for só do gestor).
