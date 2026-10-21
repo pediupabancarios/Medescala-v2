@@ -250,6 +250,17 @@ function SUITE(h){
     eq(c.S.data.docs.filter(function(d){return d.id!=='m1'&&d.email;}).length,0,'mexeu no e-mail de outro médico');
   });
 
+  test('e-mail de trocas/repasses: app avisa o servidor em cada evento (anunciar, cancelar)',async function(){
+    var c=await appComo(DOCS3[1],{data:{docs:DOCS3,exchanges:[]},shifts:[shift('s1','2026-12-10','D','m1')]});
+    await c.A.doSync(true);
+    c.A.modalPass('s1');c.A.G('PASSSH').value='s1';c.A.doPass();await sleep(300);
+    var ex=c.A.ST.exchanges[0];ok(ex&&ex.status==='open','repasse não foi criado');
+    function chamadas(){return c.S.log.filter(function(x){return String(x.p).indexOf('send-exchange-email')>=0;}).map(function(x){return JSON.parse(x.b);});}
+    eq(chamadas(),[{exch_id:ex.id,event:'announced'}]);
+    c.A.cancelExch(ex.id);await sleep(300);
+    eq(chamadas()[1],{exch_id:ex.id,event:'cancelled'});
+  });
+
   /* ───────── Todas as telas abrem sem erro ───────── */
   async function varrer(user){
     var c=await appComo(user,{data:{docs:DOCS3},shifts:many(2,'2026-10-10','D').concat(many(2,'2026-10-10','N'),many(1,'2026-10-11','D','m2'))});
