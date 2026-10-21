@@ -27,6 +27,7 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 - `medescala_backups` — snapshot completo diário às 03:00 (pg_cron `medescala-backup-diario`, guarda 60 dias) + manuais (guarda 20). Baixáveis na tela Log. Restauração: só via SQL (`medescala_restore_backup`), nunca pelo app.
 - `medescala_data` (chave/valor) continua para: docs, months, exchanges, notifs, log, avisos, msgs, ocorrencias. A chave legada `shifts` é só espelho para versões antigas do app.
 - Plano **free**: sem backup do Supabase — os backups acima são a rede de segurança. Faça também download local periódico (aviso automático após 14 dias).
+- Trocas/repasses (`exchanges`) guardam `fromDate/fromType/toDate/toType` além dos IDs dos plantões; telas usam `exInfo(e,'from'|'to')` (cai no ID só se faltar a data). `backfillExchDates()` completa registros antigos quando o plantão ainda existe.
 - Tempo real: `medescala_shifts` está na publicação `supabase_realtime`; o app trata INSERT/UPDATE/DELETE em `applyShiftChange`.
 
 ## ⚠️ Proteção contra perda de dados (incidente 2026-10-17)
