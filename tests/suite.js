@@ -239,6 +239,17 @@ function SUITE(h){
     eq(w.length,1);eq(JSON.parse(w[0].b).p_doc_id,'m1');
   });
 
+  test('perfil: médico salva o próprio e-mail; e-mail inválido é recusado',async function(){
+    var c=await appComo(DOCS3[1],{data:{docs:DOCS3}});await c.A.doSync(true);
+    c.A.eval('PG_MAP.perfil()');var el=c.A.G('PROFEMAIL');ok(el,'campo de e-mail não aparece no perfil');
+    el.value='isso nao e email';c.A.saveMyEmail();await sleep(100);
+    ok(!c.A.ST.docs.find(function(d){return d.id==='m1';}).email,'gravou e-mail inválido');
+    el.value='  Ana@Exemplo.com ';c.A.saveMyEmail();await sleep(200);
+    eq(c.A.ST.docs.find(function(d){return d.id==='m1';}).email,'ana@exemplo.com');
+    ok(JSON.stringify(c.S.data.docs).indexOf('ana@exemplo.com')>=0,'e-mail não chegou ao banco');
+    eq(c.S.data.docs.filter(function(d){return d.id!=='m1'&&d.email;}).length,0,'mexeu no e-mail de outro médico');
+  });
+
   /* ───────── Todas as telas abrem sem erro ───────── */
   async function varrer(user){
     var c=await appComo(user,{data:{docs:DOCS3},shifts:many(2,'2026-10-10','D').concat(many(2,'2026-10-10','N'),many(1,'2026-10-11','D','m2'))});
