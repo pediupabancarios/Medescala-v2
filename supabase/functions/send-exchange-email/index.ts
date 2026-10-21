@@ -73,7 +73,15 @@ Deno.serve(async (req) => {
   const nome = (i?: string) => String(porId.get(i || "")?.name || "—");
   const ids = [e.fromDocId, e.toDocId].filter(Boolean);
   const gestores = (docs as any[]).filter((d) => d.role === "gestor");
-  const to = [...new Set([...ids.map((i) => porId.get(i)?.email), ...gestores.map((g) => g.email)].filter((m) => typeof m === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)).map((m) => m.toLowerCase()))];
+  const valido = (m: unknown): m is string => typeof m === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m);
+  // O gestor recebe UMA mensagem por troca/repasse: quando ela se concretiza (e nunca repetida). Anúncio, recusa e cancelamento vão só aos envolvidos.
+  const conclui = ev === "done" || ev === "claimed" || ev === "approved";
+  let gestorJaAvisado = !conclui;
+  if (conclui) {
+    const { data: ja } = await sb.from("medescala_email_log").select("event").eq("exch_id", id).in("event", ["done", "claimed", "approved"]);
+    gestorJaAvisado = !!ja?.length;
+  }
+  const to = [...new Set([...ids.map((i) => porId.get(i)?.email), ...(gestorJaAvisado ? [] : gestores.map((g) => g.email))].filter(valido).map((m) => m.toLowerCase()))];
   const { subject, html } = montar(ev, e, nome);
   if (b.dry && req.headers.get("x-cron-secret")) {
     const { data: s } = await sb.from("medescala_secrets").select("value").eq("name", "cron_secret").maybeSingle();
