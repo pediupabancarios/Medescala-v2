@@ -203,6 +203,42 @@ function SUITE(h){
     ok(Object.keys(sim.violacoes).indexOf('2026-09-01')>=0,'dia 1 já tem 2 diurnos e a planilha traz outro');
   });
 
+  /* ───────── App instalável, offline e lembretes ───────── */
+  test('PWA: manifesto, ícones e service worker existem e o app os usa',async function(){
+    var m=await fetch('../manifest.json').then(function(r){return r.json();});
+    eq(m.display,'standalone');ok(m.icons.length>=2,'ícones no manifesto');
+    for(var i=0;i<m.icons.length;i++){var r=await fetch('../'+m.icons[i].src);ok(r.ok,'ícone '+m.icons[i].src+' não existe');}
+    var sw=await fetch('../sw.js').then(function(r){return r.text();});
+    ok(/addEventListener\('push'/.test(sw)&&/addEventListener\('notificationclick'/.test(sw),'sw sem push/notificationclick');
+    var src=await h.fonte();
+    ok(/rel="manifest" href="manifest\.json"/.test(src),'index não aponta para o manifesto');
+    ok(/serviceWorker\.register\('sw\.js'\)/.test(src),'index não registra o sw.js');
+    ok(!/registerServiceWorker\(\)\{return;/.test(src),'service worker voltou a ficar desligado');
+  });
+  test('offline: a última escala sincronizada fica guardada e volta sem internet, sem permitir gravar',async function(){
+    var c=await appComo(null,{data:{docs:DOCS3},shifts:many(3,'2026-10-01','D')});
+    await c.A.doSync(true);
+    var guardado=c.A.localStorage.getItem('mes_cache_v1');ok(guardado,'cache não foi gravado');
+    var A=await newApp();A.localStorage.setItem('mes_cache_v1',guardado);
+    var log=[];
+    A.fetch=function(u,o){log.push({m:(o&&o.method)||'GET',p:String(u)});return Promise.reject(new Error('sem rede'));};
+    ok(A.loadCache(),'loadCache devolveu falso');
+    eq(A.ST.shifts.length,3);ok(A.ST.docs.length>=3);
+    A.CU=DOCS3[0];await A.doSync(true).catch(function(){});
+    ok(!A.LOADED.shifts,'não pode marcar como lido sem ter lido');
+    A.ST.shifts=A.ST.shifts.slice(0,1);await A.save('shifts');
+    eq(log.filter(function(x){return x.m!=='GET';}),[],'offline não pode gravar nada');
+  });
+  test('lembretes: cartão só para médicos e inscrição vai para o banco',async function(){
+    var c=await appComo(DOCS3[1],{data:{docs:DOCS3}});await c.A.doSync(true);
+    c.A.eval('PG_MAP.perfil()');ok(c.A.G('PUSHCARD'),'médico deveria ver o cartão de lembretes');
+    var g=await appComo(DOCS3[0],{data:{docs:DOCS3}});await g.A.doSync(true);
+    g.A.eval('PG_MAP.perfil()');ok(!g.A.G('PUSHCARD'),'gestor não recebe lembretes de plantão');
+    await c.A.rpc('medescala_push_subscribe',c.A.pushSubArgs({toJSON:function(){return{endpoint:'https://push.example/x',keys:{p256dh:'a',auth:'b'}};}}));
+    var w=c.S.writes().filter(function(x){return x.p==='rpc/medescala_push_subscribe';});
+    eq(w.length,1);eq(JSON.parse(w[0].b).p_doc_id,'m1');
+  });
+
   /* ───────── Todas as telas abrem sem erro ───────── */
   async function varrer(user){
     var c=await appComo(user,{data:{docs:DOCS3},shifts:many(2,'2026-10-10','D').concat(many(2,'2026-10-10','N'),many(1,'2026-10-11','D','m2'))});

@@ -1231,98 +1231,19 @@ body.light #CONT{
 .shi.shi-closed{border-left-color:var(--tx3) !important;opacity:.72;}
 .shi.shi-x{border-left-color:var(--bl) !important;}
 </style>
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjUxMiIgeTI9IjUxMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIyYTI0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzA1OTY2OSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9InVybCgjZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjE3MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlVQQTwvdGV4dD4KICA8cmVjdCB4PSI2MCIgeT0iMzEwIiB3aWR0aD0iMzkyIiBoZWlnaHQ9IjMiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjMpIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIzOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSI2OCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwuNzUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5CQU5Dw4FSSU9TPC90ZXh0Pgo8L3N2Zz4=">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>
-var manifest={name:'MedEscala UPA Pediatria JP',short_name:'MedEscala',start_url:window.location.href,display:'standalone',background_color:'#022a24',theme_color:'#059669',orientation:'any',icons:[{src:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjUxMiIgeTI9IjUxMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIyYTI0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzA1OTY2OSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9InVybCgjZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjE3MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlVQQTwvdGV4dD4KICA8cmVjdCB4PSI2MCIgeT0iMzEwIiB3aWR0aD0iMzkyIiBoZWlnaHQ9IjMiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjMpIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIzOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSI2OCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwuNzUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5CQU5Dw4FSSU9TPC90ZXh0Pgo8L3N2Zz4=',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'},{src:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjUxMiIgeTI9IjUxMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDIyYTI0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzA1OTY2OSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTAiIGZpbGw9InVybCgjZykiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjE3MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlVQQTwvdGV4dD4KICA8cmVjdCB4PSI2MCIgeT0iMzEwIiB3aWR0aD0iMzkyIiBoZWlnaHQ9IjMiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsLjMpIi8+CiAgPHRleHQgeD0iMjU2IiB5PSIzOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSI2OCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwuNzUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5CQU5Dw4FSSU9TPC90ZXh0Pgo8L3N2Zz4=',sizes:'192x192',type:'image/svg+xml',purpose:'any maskable'}]}
-var bl=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-var ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(bl);document.head.appendChild(ml);
 var BIOMETRIC_KEY='mes_biometric';var biometricAvailable=false;
 function checkBiometric(){if(!window.PublicKeyCredential){biometricAvailable=false;return Promise.resolve(false);}return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(a){biometricAvailable=a;return a;}).catch(function(){biometricAvailable=false;return false;});}
 function tryBiometricLogin(){if(!biometricAvailable)return;var saved=null;try{saved=JSON.parse(localStorage.getItem(BIOMETRIC_KEY)||'null');}catch(e){}if(!saved||!saved.login||!saved.pwd)return;var challenge=new Uint8Array(32);crypto.getRandomValues(challenge);navigator.credentials.get({publicKey:{challenge:challenge,timeout:60000,userVerification:'required',rpId:window.location.hostname}}).then(function(cred){if(cred){var li=document.getElementById('LIU'),pi=document.getElementById('LIP');if(li)li.value=saved.login;if(pi)pi.value=saved.pwd;setTimeout(doLogin,100);showToast('🔓 Autenticado!','ok');}}).catch(function(){});}
 function hasBiometric(){try{var s=JSON.parse(localStorage.getItem(BIOMETRIC_KEY)||'null');return !!(s&&s.login);}catch(e){return false;}}
-function registerServiceWorker(){return; // SW desabilitado
-if(!('serviceWorker' in navigator))return;
-var swCode=`
-const CACHE='medescala-v5';
-const OFFLINE_KEY='medescala-offline-data';
-
-self.addEventListener('install',e=>{
-  e.waitUntil(
-    caches.open(CACHE).then(c=>
-      fetch(self.location.href).then(r=>c.put(self.location.href,r)).catch(()=>{})
-    )
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate',e=>{
-  e.waitUntil(
-    caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch',e=>{
-  if(e.request.url.includes('supabase.co')){
-    e.respondWith(
-      fetch(e.request)
-        .then(r=>{
-          if(r.ok&&e.request.method==='GET'){
-            var cl=r.clone();
-            caches.open(CACHE).then(c=>c.put(e.request,cl));
-          }
-          return r;
-        })
-        .catch(()=>caches.match(e.request).then(c=>c||new Response(JSON.stringify({data:[],error:null}),{headers:{'Content-Type':'application/json'}})))
-    );
-    return;
-  }
-  e.respondWith(
-    caches.match(e.request).then(cached=>{
-      if(cached)return cached;
-      return fetch(e.request).then(r=>{
-        if(r.ok&&r.type==='basic'){
-          var cl=r.clone();
-          caches.open(CACHE).then(c=>c.put(e.request,cl));
-        }
-        return r;
-      }).catch(()=>caches.match(self.location.href));
-    })
-  );
-});
-
-self.addEventListener('push',e=>{
-  var data=e.data?e.data.json():{title:'MedEscala',body:'Nova notificação'};
-  e.waitUntil(
-    self.registration.showNotification(data.title||'MedEscala',{
-      body:data.body||'',
-      icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzUxMicgeTI9JzUxMic+PHN0b3Agb2Zmc2V0PScwJScgc3RvcC1jb2xvcj0nJTIzMDIyYTI0Jy8+PHN0b3Agb2Zmc2V0PScxMDAlJyBzdG9wLWNvbG9yPSclMjMwNTk2NjknLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9JzExMCcgZmlsbD0ndXJsKCUyM2cpJy8+PHRleHQgeD0nMjU2JyB5PScxODAnIGZvbnQtZmFtaWx5PSdBcmlhbCcgZm9udC13ZWlnaHQ9JzkwMCcgZm9udC1zaXplPScxNDAnIGZpbGw9J3doaXRlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5VUEE8L3RleHQ+PHJlY3QgeD0nMjE4JyB5PScyMjAnIHdpZHRoPSc3NicgaGVpZ2h0PScyMTAnIHJ4PScyMicgZmlsbD0nd2hpdGUnLz48cmVjdCB4PScxMjgnIHk9JzI5MCcgd2lkdGg9JzI1NicgaGVpZ2h0PSc3Nicgcng9JzIyJyBmaWxsPSd3aGl0ZScvPjwvc3ZnPg==',
-      badge:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA5NiA5NicgZmlsbD0nJTIzMTBiOTgxJz48cmVjdCB4PSczOCcgeT0nOCcgd2lkdGg9JzIwJyBoZWlnaHQ9JzgwJyByeD0nNCcvPjxyZWN0IHg9JzgnIHk9JzM4JyB3aWR0aD0nODAnIGhlaWdodD0nMjAnIHJ4PSc0Jy8+PC9zdmc+',
-      tag:data.tag||'medescala',
-      requireInteraction:data.urgent||false,
-      actions:data.actions||[],
-      data:data
-    })
-  );
-});
-
-self.addEventListener('notificationclick',e=>{
-  e.notification.close();
-  e.waitUntil(clients.matchAll({type:'window'}).then(cs=>{
-    if(cs.length>0)return cs[0].focus();
-    return clients.openWindow(self.location.href.replace(/\/sw-.*$/,''));
-  }));
-});
-`;
-var blob=new Blob([swCode],{type:'application/javascript'});
-navigator.serviceWorker.register(URL.createObjectURL(blob))
-  .then(function(reg){
-    window._swReg=reg;
-    console.log('SW registrado');
-  })
-  .catch(function(e){console.warn('SW erro:',e);});
-window.addEventListener('offline',function(){setSyncUI('err','● Sem internet');showToast('📵 Modo offline','info');});
-window.addEventListener('online',function(){setSyncUI('loading','Reconectando...');setTimeout(function(){syncing=false;if(SAFE_REFRESH_SKIP.indexOf(curPg)<0)doSync(true);},1000);});}
+function registerServiceWorker(){
+  window.addEventListener('offline',function(){setSyncUI('err','● Sem internet');showToast('📵 Sem conexão — mostrando os últimos dados','info');});
+  window.addEventListener('online',function(){setSyncUI('loading','Reconectando...');setTimeout(function(){syncing=false;if(SAFE_REFRESH_SKIP.indexOf(curPg)<0)doSync(true);},1000);});
+  if(!('serviceWorker' in navigator)||/[?&]nosw=1/.test(location.search))return;
+  navigator.serviceWorker.register('sw.js').then(function(reg){window._swReg=reg;}).catch(function(e){console.warn('SW erro:',e);});
+}
 </script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style id="ux-extra">
@@ -1613,29 +1534,48 @@ function checkGeoAndRun(fn){if(isG()){fn();return;}if(!navigator.geolocation){op
 
 var NOTIF_PERM=false;
 
-function requestNotifPermission(){
-  if(!('Notification' in window))return;
-  if(Notification.permission==='default'){
-    Notification.requestPermission().then(function(p){
-      if(p==='granted'){
-        showToast('✅ Notificações ativadas!','ok');
-        subscribePush();
-      }
-    });
-  } else if(Notification.permission==='granted'){
-    subscribePush();
-  }
-}
+var CACHE_KEY='mes_cache_v1',CACHE_KEYS=['docs','shifts','months','exchanges','avisos','ocorrencias'];
+function saveCache(){try{var o={t:Date.now()};CACHE_KEYS.forEach(function(k){o[k]=ST[k];});o.notifs=(ST.notifs||[]).slice(0,30);o.log=(ST.log||[]).slice(0,30);localStorage.setItem(CACHE_KEY,JSON.stringify(o));window._cacheT=o.t;}catch(e){}}
+function loadCache(){try{var o=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');if(!o)return false;CACHE_KEYS.concat(['notifs','log']).forEach(function(k){if(Array.isArray(o[k])&&!(ST[k]&&ST[k].length))ST[k]=o[k];});window._cacheT=o.t;return true;}catch(e){return false;}}
+function cacheHora(){return window._cacheT?new Date(window._cacheT).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';}
 
-function subscribePush(){
-  if(!window._swReg)return;
-  // Notificação de teste local
-  window._swReg.showNotification('🏥 MedEscala Ativo',{
-    body:'Notificações de plantão ativadas com sucesso!',
-    icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzUxMicgeTI9JzUxMic+PHN0b3Agb2Zmc2V0PScwJScgc3RvcC1jb2xvcj0nJTIzMDIyYTI0Jy8+PHN0b3Agb2Zmc2V0PScxMDAlJyBzdG9wLWNvbG9yPSclMjMwNTk2NjknLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9JzExMCcgZmlsbD0ndXJsKCUyM2cpJy8+PHRleHQgeD0nMjU2JyB5PScxODAnIGZvbnQtZmFtaWx5PSdBcmlhbCcgZm9udC13ZWlnaHQ9JzkwMCcgZm9udC1zaXplPScxNDAnIGZpbGw9J3doaXRlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5VUEE8L3RleHQ+PHJlY3QgeD0nMjE4JyB5PScyMjAnIHdpZHRoPSc3NicgaGVpZ2h0PScyMTAnIHJ4PScyMicgZmlsbD0nd2hpdGUnLz48cmVjdCB4PScxMjgnIHk9JzI5MCcgd2lkdGg9JzI1NicgaGVpZ2h0PSc3Nicgcng9JzIyJyBmaWxsPSd3aGl0ZScvPjwvc3ZnPg==',
-    tag:'welcome'
-  }).catch(function(){});
+/* ══ Lembretes de plantão com o app fechado (Web Push) ══ */
+function vapidKey(){return fetch(SURL+'/functions/v1/send-shift-reminders',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"mode":"info"}'}).then(function(r){if(!r.ok)throw new Error('serviço de lembretes indisponível');return r.json();}).then(function(j){return j.publicKey;});}
+function b64ToU8(b){var p='='.repeat((4-b.length%4)%4),r=atob((b+p).replace(/-/g,'+').replace(/_/g,'/')),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;}
+function pushSupported(){return('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);}
+function isStandalone(){return window.matchMedia('(display-mode:standalone)').matches||!!window.navigator.standalone;}
+function isIOSDev(){return/iphone|ipad|ipod/i.test(navigator.userAgent);}
+function rpc(fn,args){return fetch(SURL+'/rest/v1/rpc/'+fn,{method:'POST',headers:sbH(),body:JSON.stringify(args)}).then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(t);});return r.text();});}
+function getPushSub(){return navigator.serviceWorker.getRegistration().then(function(reg){return reg?reg.pushManager.getSubscription():null;});}
+function pushSubArgs(sub){return{p_doc_id:CU.id,p_sub:sub.toJSON(),p_ua:String(navigator.userAgent).slice(0,120)};}
+function ensurePushSub(){getPushSub().then(function(sub){if(sub&&CU&&!isG())return rpc('medescala_push_subscribe',pushSubArgs(sub));}).catch(function(){});}
+function enablePush(){
+  if(!pushSupported()){showToast('Este navegador não suporta lembretes com o app fechado.','err');return;}
+  Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('permissão negada');return navigator.serviceWorker.ready;})
+  .then(function(reg){return reg.pushManager.getSubscription().then(function(s){return s||vapidKey().then(function(k){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(k)});});});})
+  .then(function(sub){return rpc('medescala_push_subscribe',pushSubArgs(sub));})
+  .then(function(){showToast('✅ Lembretes ativados neste aparelho!','ok');renderPushCard();})
+  .catch(function(e){showToast('⛔ Não consegui ativar: '+String(e&&e.message||e).slice(0,70),'err');renderPushCard();});
 }
+function disablePush(){
+  getPushSub().then(function(sub){if(!sub)return;var ep=sub.endpoint;return sub.unsubscribe().then(function(){return rpc('medescala_push_unsubscribe',{p_endpoint:ep});});})
+  .then(function(){showToast('Lembretes desativados.','info');renderPushCard();}).catch(function(){renderPushCard();});
+}
+function testPush(){
+  getPushSub().then(function(sub){if(!sub)throw new Error('sem inscrição');return rpc('medescala_push_test',{p_endpoint:sub.endpoint});})
+  .then(function(){showToast('📨 Teste enviado — chega em alguns segundos.','ok');}).catch(function(e){showToast('⛔ '+String(e&&e.message||e).slice(0,90),'err');});
+}
+function renderPushCard(){
+  var el=G('PUSHCARD');if(!el)return;
+  if(isIOSDev()&&!isStandalone()){el.innerHTML='<p>No iPhone os lembretes só funcionam com o app instalado: toque em <b>Compartilhar ↑</b> → <b>Adicionar à Tela de Início</b>, abra o MedEscala por esse ícone e volte aqui para ativar.</p>';return;}
+  if(!pushSupported()){el.innerHTML='<p>Este navegador não consegue receber lembretes com o app fechado.</p>';return;}
+  if(Notification.permission==='denied'){el.innerHTML='<p>As notificações estão <b>bloqueadas</b> para este site. Libere nas configurações do navegador e volte aqui.</p>';return;}
+  getPushSub().then(function(sub){
+    if(sub&&Notification.permission==='granted')el.innerHTML='<p style="color:var(--tl);font-weight:600">✅ Ativados neste aparelho</p><p style="margin-top:4px">Você recebe um aviso 1 hora e 15 minutos antes de cada plantão, mesmo com o app fechado.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn bgh sm" onclick="testPush()">📨 Enviar teste</button><button class="btn bgh sm" style="color:var(--rs)" onclick="disablePush()">Desativar</button></div>';
+    else el.innerHTML='<p>Receba um aviso <b>1 hora</b> e <b>15 minutos</b> antes de cada plantão seu, mesmo com o app fechado.</p><button class="btn bp sm" style="margin-top:10px" onclick="enablePush()">🔔 Ativar lembretes</button>';
+  }).catch(function(){el.innerHTML='<p>Não consegui verificar o estado dos lembretes.</p>';});
+}
+function requestNotifPermission(){if(pushSupported()&&Notification.permission==='granted')ensurePushSub();}
 
 function sendBrowserNotif(title,body,urgent){
   if(Notification.permission!=='granted')return;
@@ -1908,13 +1848,14 @@ var SYNC_VER={},LAST_SHIFTS_FULL=0;
 function sbVersions(){return fetch(SURL+'/rest/v1/medescala_data?select=key,updated_at',{method:'GET',headers:sbH()}).then(function(r){if(!r.ok)throw new Error('versoes');return r.json();}).then(function(rows){var m={};rows.forEach(function(x){m[x.key]=x.updated_at;});return m;});}
 function doSync(force){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setSyncUI('err','Banco não configurado');return Promise.resolve();}syncing=true;setSyncUI('loading','Sincronizando...');var keys=['docs','months','exchanges','notifs','log','avisos','msgs','ocorrencias'];
   var full=force===true||!LOADED.docs;
-  return sbVersions().catch(function(){return null;}).then(function(ver){
+  var okAny=false;
+  return sbVersions().then(function(v){okAny=true;return v;}).catch(function(){return null;}).then(function(ver){
     var todo=keys.filter(function(k){return full||!ver||(ver[k]?SYNC_VER[k]!==ver[k]:!LOADED[k]);});
     var shiftsDue=full||!ver||(Date.now()-LAST_SHIFTS_FULL>((realtimeWS&&realtimeWS.readyState===1)?600000:60000));
-    var ps=todo.map(function(k){return sbGet(k).then(function(v){markLoaded(k,v);if(ver&&ver[k])SYNC_VER[k]=ver[k];if(v!==null&&v!==undefined){if(Array.isArray(v))ST[k]=v;else if(typeof v==='object')ST[k]=v;}}).catch(function(e){console.warn('Sync key failed:',k);});});
-    if(shiftsDue)ps.push(sbGetShifts().then(function(arr){LAST_SHIFTS_FULL=Date.now();ST.shifts=arr;snapShifts(arr);markLoaded('shifts',arr);}).catch(function(e){console.warn('Sync shifts failed');}));
+    var ps=todo.map(function(k){return sbGet(k).then(function(v){okAny=true;markLoaded(k,v);if(ver&&ver[k])SYNC_VER[k]=ver[k];if(v!==null&&v!==undefined){if(Array.isArray(v))ST[k]=v;else if(typeof v==='object')ST[k]=v;}}).catch(function(e){console.warn('Sync key failed:',k);});});
+    if(shiftsDue)ps.push(sbGetShifts().then(function(arr){okAny=true;LAST_SHIFTS_FULL=Date.now();ST.shifts=arr;snapShifts(arr);markLoaded('shifts',arr);}).catch(function(e){console.warn('Sync shifts failed');}));
     return Promise.all(ps);
-  }).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});snapAuditAll();setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));updateNBadge();updateBNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
+  }).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});snapAuditAll();if(okAny&&LOADED.docs&&LOADED.shifts){setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));saveCache();}else setSyncUI('err','Sem conexão — dados de '+(cacheHora()||'?')+' (só leitura)');updateNBadge();updateBNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
 var LOADED={},LOADEDLEN={};
 function markLoaded(k,v){LOADED[k]=true;LOADEDLEN[k]=Array.isArray(v)?v.length:0;}
 
@@ -1977,7 +1918,7 @@ function auditAfterSave(key){
 }
 
 function save(key){
-  if(!LOADED[key]){console.warn('save bloqueado (chave não sincronizada):',key);showToast('⛔ Dados ainda não sincronizados — nada foi salvo, para proteger o banco. Recarregue a página.','err');return Promise.resolve();}
+  if(!LOADED[key]){console.warn('save bloqueado (chave não sincronizada):',key);showToast(navigator.onLine===false?'📵 Sem conexão — não foi possível salvar. Tente quando voltar a internet.':'⛔ Dados ainda não sincronizados — nada foi salvo, para proteger o banco. Recarregue a página.','err');return Promise.resolve();}
   if(key==='shifts')return saveShifts();
   var n=Array.isArray(ST[key])?ST[key].length:0,antes=LOADEDLEN[key]||0;
   if(antes>=30&&n<antes*0.5&&!confirm('⚠️ Esta ação vai reduzir "'+key+'" de '+antes+' para '+n+' registros. Confirmar?')){showToast('Gravação cancelada — nada foi alterado.','info');return Promise.resolve();}
@@ -2035,7 +1976,7 @@ function boot(){
   // Esconde splash
   var sp=document.getElementById('SPLASH');
   if(sp){sp.style.opacity='0';sp.style.transition='opacity .3s';setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},350);}
-  initTheme();loadTheme();registerServiceWorker();
+  initTheme();loadTheme();registerServiceWorker();loadCache();
   try{var cfg=JSON.parse(localStorage.getItem(CFG_KEY)||'{}');if(cfg.url&&cfg.key){SURL=cfg.url;SKEY=cfg.key;}}catch(e){}
   if(!SURL||!SKEY){showSetup();return;}
   G('LS').classList.add('on');
@@ -4673,6 +4614,8 @@ function pgPerfil(){
     '</div>'+
   '</div>'+
 
+  (!isG()?'<div class="card"><div class="ch"><h3>🔔 Lembretes de plantão</h3></div><div class="cb" id="PUSHCARD" style="font-size:13px;color:var(--tx2)"></div></div>':'')+
+
   // ── ALTERAR SENHA ──
   '<div class="card">'+
     '<div class="ch"><h3>🔑 Alterar Senha</h3></div>'+
@@ -4685,6 +4628,7 @@ function pgPerfil(){
 
   '</div>';
   G('CONT').innerHTML=h;
+  if(!isG())renderPushCard();
 }
 function saveProfile(){var col=G('PROFCOLOR');var doc=ST.docs.find(function(d){return d.id===CU.id;});if(doc&&col){doc.color=col.value;doc.ini=mkIni(doc.name);CU.color=col.value;}save('docs').then(function(){showToast('✅ Perfil salvo!','ok');buildSB();});}
 

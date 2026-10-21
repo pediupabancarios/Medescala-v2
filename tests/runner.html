@@ -26,8 +26,9 @@ function ok(c,msg){if(!c)throw new Error(msg||'condição falsa');}
 function skip(motivo){var e=new Error(motivo);e.skip=true;throw e;}
 
 async function newApp(){
+  try{localStorage.removeItem('mes_cache_v1');}catch(e){}
   var f=document.createElement('iframe');
-  f.src='../index.html?_t='+Math.random();
+  f.src='../index.html?nosw=1&_t='+Math.random();
   document.body.appendChild(f);
   await new Promise(function(res,rej){f.onload=res;setTimeout(function(){rej(new Error('index.html não carregou'));},20000);});
   await sleep(200);
