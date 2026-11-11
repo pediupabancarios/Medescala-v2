@@ -296,6 +296,35 @@ function SUITE(h){
     ok(/Trocas a aprovar/.test(tg),'contador de trocas a aprovar para o gestor');
     ok(iPr<0||iPa<iPr,'painel antes dos plantões pessoais');
   });
+  test('trocas: um botão só ("Trocar ou repassar") e a escolha leva ao fluxo certo',async function(){
+    var sh=[shift('f1','2030-12-10','D','m1'),shift('f2','2030-12-11','N','m1')];
+    var A=await appData(DOCS3[1],sh);
+    A.goTo('exchanges');await sleep(150);var t=A.G('CONT').textContent;
+    ok(/Trocar ou repassar/.test(t),'botão único');ok(!/Solicitar Troca|Anunciar Repasse/.test(t),'os dois botões antigos saíram');
+    A.modalTroca('f2');await sleep(100);ok(A.G('TRSH')&&A.G('TRSH').value==='f2','plantão pré-selecionado');
+    A.trocaEscolha('pass');await sleep(250);ok(A.G('PASSSH')&&A.G('PASSSH').value==='f2','abre o repasse com o plantão escolhido');
+    A.modalTroca('f1');await sleep(100);A.trocaEscolha('exch');await sleep(250);ok(A.G('EXMY')&&A.G('EXMY').value==='f1','abre a troca com o plantão escolhido');
+    var g=await appData(DOCS3[0],sh);var n=0;g.showToast=function(){n++;};g.modalTroca(null);eq(n,1,'gestor não tem plantão para trocar');
+  });
+  test('calendário: deslizar troca o mês e o painel do dia oferece "Trocar" no meu plantão',async function(){
+    var sh=[shift('c1','2026-11-20','D','m1'),shift('c2','2026-11-20','D','m2')];
+    var A=await appData(DOCS3[1],sh);A.goTo('calendar');await sleep(200);
+    function toque(tipo,x,y){var ev=new A.Event(tipo,{bubbles:true});var pt=[{clientX:x,clientY:y}];ev.touches=tipo==='touchend'?[]:pt;ev.changedTouches=pt;A.document.querySelector('.cal-grid').dispatchEvent(ev);}
+    eq(A.eval('calMonth.getMonth()'),10,'novembro');
+    toque('touchstart',300,200);toque('touchend',150,205);await sleep(150);eq(A.eval('calMonth.getMonth()'),11,'deslizar p/ esquerda = próximo mês');
+    toque('touchstart',100,200);toque('touchend',250,205);await sleep(150);eq(A.eval('calMonth.getMonth()'),10,'deslizar p/ direita = mês anterior');
+    toque('touchstart',100,200);toque('touchend',130,320);await sleep(100);eq(A.eval('calMonth.getMonth()'),10,'rolagem vertical não troca o mês');
+    A.showDay('2026-11-20');await sleep(100);ok(/Trocar/.test(A.document.body.textContent),'mostra o botão Trocar no meu plantão');
+    var o=await appData(DOCS3[2],sh);o.showDay('2026-11-20');await sleep(100);ok(/Seu plantão/.test(o.document.body.textContent),'a outra médica também vê o próprio');
+  });
+  test('rede: a faixa só aparece quando há problema; o ↻ do topo mostra o estado',async function(){
+    var A=await appData(DOCS3[1],[shift('n1','2030-12-10','D','m1')]);
+    A.setSyncUI('ok','Sincronizado 10:00');ok(A.getComputedStyle(A.G('SYNCBAR')).display==='none','faixa escondida quando está tudo certo');
+    A.setSyncUI('loading','Sincronizando');ok(A.getComputedStyle(A.G('SYNCBAR')).display==='none','e durante a sincronização normal');
+    ok(/sync-loading/.test(A.G('SYNCBTN').className));
+    A.setSyncUI('err','● Sem internet');ok(A.getComputedStyle(A.G('SYNCBAR')).display!=='none','aparece quando está sem conexão');
+    ok(/sync-err/.test(A.G('SYNCBTN').className));
+  });
   test('tema escuro: botões "fantasma" e campos não ficam com fundo cinza-claro',async function(){
     var A=await appData(DOCS3[1],[shift('t1','2026-11-12','D','m1')]);A.goTo('calendar');await sleep(200);
     var b=A.document.querySelector('.btn.bgh'),cs=A.getComputedStyle(b).backgroundColor,m=cs.match(/[\d.]+/g).map(Number);
