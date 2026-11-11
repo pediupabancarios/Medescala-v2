@@ -77,3 +77,9 @@ O app já apagou ago/set/out ao gravar a escala de fábrica quando a leitura fal
 - **Senha:** `senhaPropria(doc)` devolve a senha própria (customPass > pass > senha, se diferente do CRM). Quem tem senha própria só entra com ela; sem senha própria vale o CRM (padrão) e o app avisa para trocar. ⚠️ O banco ainda é aberto para a chave pública (qualquer um com a chave lê/grava `medescala_data`, inclusive senhas) — endurecer exige login por servidor (RPC + token), ainda não feito.
 - **Trocas/repasses:** `slotOcupado(docId,data,tipo,exceto)` impede médico 2x no mesmo turno; troca, repasse e aprovação conferem se o plantão ainda é de quem o pedido diz.
 - **Horas:** `plantaoEncerrado(s)` = fechado OU horário já passou (D até 19h; N até 07h do dia seguinte). Meses importados da planilha ficam `open`, por isso o Banco de Horas não pode depender só de `closed`.
+
+## Visual e navegação (2026-11-11)
+- Contraste: `--tx3` (texto terciário) clareado no tema escuro (`#5aa985`) e escurecido no claro (`#3f7a5c`). O bloco `<style>` antes de `</head>` corrige o tema escuro: `.bgh` e campos (`input/select/textarea`) tinham fundo cinza-claro herdado do tema claro; `body.theme-light` mantém o visual claro.
+- Calendário: filtro "Todos | Só os meus" (gestor ainda filtra por médico), seletor de mês dentro do cabeçalho do calendário, e cada dia mostra só "N vaga(s)" onde falta gente (2 por turno) — não existe mais "CHEIO".
+- Início: contadores com rótulos claros ("Meus no mês / Ativos agora / Concluídos"; gestor: "Plantões no mês / Ativos agora / Trocas a aprovar"); para o gestor a ordem é Atenção → Painel → plantões pessoais; o próximo plantão futuro usa botão "Ver detalhes do plantão" (o "slide" fica só para iniciar o plantão de hoje); o aviso "plantão amanhã" não repete o card.
+- Topo no celular (≤480px): relógio escondido e o nome do local em uma linha.

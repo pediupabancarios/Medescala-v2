@@ -36,7 +36,7 @@ body.theme-light{
   --bd2:rgba(16,185,129,.28);
   --tx:#0a2218;
   --tx2:#1a5c35;
-  --tx3:#4a8a6a;
+  --tx3:#3f7a5c;
   --bl:#059669;
   --bl2:#047a54;
   --tl:#10b981;
@@ -49,7 +49,7 @@ body.theme-light{
 /* Topbar e bottom nav brancos */
 body.theme-light #TB{background:#fff!important;border-bottom:1px solid rgba(16,185,129,.15)!important}
 body.theme-light #BN{background:#fff!important;border-top:1px solid rgba(16,185,129,.12)!important}
-body.theme-light .bni{color:#4a8a6a!important}
+body.theme-light .bni{color:#3f7a5c!important}
 body.theme-light .bni.on{color:#059669!important}
 body.theme-light .bni.on .bni-pill,.bni.on .bp{background:rgba(16,185,129,.12)!important}
 /* Sidebar */
@@ -64,7 +64,7 @@ body.theme-light input,body.theme-light textarea,body.theme-light select{
   background:#fff!important;color:#0a2218!important;
   border-color:rgba(16,185,129,.25)!important;
 }
-body.theme-light input::placeholder,body.theme-light textarea::placeholder{color:#4a8a6a!important}
+body.theme-light input::placeholder,body.theme-light textarea::placeholder{color:#3f7a5c!important}
 /* Login */
 body.theme-light .lcard{background:linear-gradient(160deg,#ffffff,#e6faf3)!important;border-color:rgba(16,185,129,.2)!important}
 body.theme-light .lcard h1,.lcard .logo-txt h1{background:linear-gradient(135deg,#059669,#047a54)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
@@ -75,7 +75,7 @@ body.theme-light .pgdash-hero{background:linear-gradient(135deg,#047a54,#10b981)
 /* Texto no conteúdo */
 body.theme-light #CONT{background:#f0fdf8!important}
 body.theme-light h2,body.theme-light h3{color:#0a2218!important}
-body.theme-light p,body.theme-light small{color:#4a8a6a!important}
+body.theme-light p,body.theme-light small{color:#3f7a5c!important}
 /* Sync bar */
 body.theme-light #SYNC{background:rgba(240,253,248,.97)!important;border-bottom:1px solid rgba(16,185,129,.1)!important}
 body.theme-light #SYNC *{color:#1a5c35!important}
@@ -93,7 +93,7 @@ body.theme-light .cd-num{color:#0a2218!important}
 /* Dark Navy Theme */
 --bg:#022a24;--sf:#053530;--sf2:#064038;--sf3:#07483e;
 --bd:rgba(16,185,129,.18);--bd2:rgba(16,185,129,.32);
---tx:#d1fae5;--tx2:#6ee7b7;--tx3:#2d7a56;
+--tx:#d1fae5;--tx2:#6ee7b7;--tx3:#5aa985;
 --bl:#10b981;--bl2:#059669;
 --tl:#34d399;--gd:#f59e0b;--rs:#f87171;--gn:#34d399;--pu:#34d399;--or:#fb923c;
 --sw:265px;--th:56px;--bh:68px;
@@ -467,7 +467,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--bl)!important;box-sha
   --bd2:rgba(16,185,129,.32);
   --tx:#d1fae5;
   --tx2:#6ee7b7;
-  --tx3:#2d7a56;
+  --tx3:#5aa985;
   --bl:#10b981;
   --bl2:#059669;
   --tl:#34d399;
@@ -1262,6 +1262,15 @@ function registerServiceWorker(){
 .cd.cal-focus{outline:3px solid var(--bl);outline-offset:-1px;animation:calPulse 1.4s ease 2}
 @keyframes calPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
 </style>
+<style>
+.tb-brand{white-space:nowrap}
+@media(max-width:480px){#CLK{display:none}.tb-brand{font-size:9.5px;letter-spacing:.8px}}
+/* tema escuro: botões "fantasma" e campos tinham fundo cinza-claro (sobra do tema claro) → texto claro sobre fundo claro */
+.bgh{background:rgba(16,185,129,.10)!important;border:1px solid rgba(16,185,129,.30)!important;color:var(--tx2)!important}
+input[type=text],input[type=date],input[type=month],input[type=password],input[type=email],input[type=number],input[type=search],input[type=tel],select,textarea{background:rgba(16,185,129,.07)!important;border-color:rgba(16,185,129,.28)!important;color:var(--tx)!important}
+body.theme-light .bgh{background:rgba(244,249,246,.6)!important;border:1px solid rgba(16,185,129,.15)!important}
+body.theme-light input[type=text],body.theme-light input[type=date],body.theme-light input[type=month],body.theme-light input[type=password],body.theme-light input[type=email],body.theme-light input[type=number],body.theme-light input[type=search],body.theme-light input[type=tel],body.theme-light select,body.theme-light textarea{background:rgba(244,249,246,.6)!important;border-color:rgba(16,185,129,.2)!important}
+</style>
 </head>
 <body>
 <div id="SETUP">
@@ -1380,7 +1389,7 @@ function registerServiceWorker(){
       <div style="display:flex;align-items:center;gap:9px">
         <button class="btn-menu" onclick="toggleSb()">☰</button>
         <div>
-          <div style="font-size:10.5px;font-weight:800;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase;line-height:1;margin-bottom:2px">UPA BANCÁRIOS · JP</div>
+          <div class="tb-brand" style="font-size:10.5px;font-weight:800;color:var(--tx3);letter-spacing:1.2px;text-transform:uppercase;line-height:1;margin-bottom:2px">UPA BANCÁRIOS · JP</div>
           <span class="tbt" id="TBT">Dashboard</span>
         </div>
       </div>
@@ -2813,7 +2822,7 @@ function applyTheme(){
     r.style.setProperty('--bd2','rgba(16,185,129,.28)');
     r.style.setProperty('--tx','#0a2218');
     r.style.setProperty('--tx2','#1a5c35');
-    r.style.setProperty('--tx3','#4a8a6a');
+    r.style.setProperty('--tx3','#3f7a5c');
     r.style.setProperty('--bl','#059669');
     r.style.setProperty('--bl2','#047a54');
     r.style.setProperty('--tl','#10b981');
@@ -2830,7 +2839,7 @@ function applyTheme(){
   r.style.setProperty('--bd2','rgba(16,185,129,.32)');
   r.style.setProperty('--tx','#d1fae5');
   r.style.setProperty('--tx2','#6ee7b7');
-  r.style.setProperty('--tx3','#2d7a56');
+  r.style.setProperty('--tx3','#5aa985');
   r.style.setProperty('--shadow-sm','0 2px 8px rgba(0,0,0,.3)');
   r.style.setProperty('--shadow-md','0 6px 24px rgba(0,0,0,.4)');
   r.style.setProperty('--glass','rgba(2,42,36,.95)');
@@ -2875,15 +2884,16 @@ function pgDash(){
   h+='<div style="font-family:Montserrat,sans-serif;font-size:19px;font-weight:800;line-height:1.2;margin-bottom:6px">'+CU.name+'</div>';
   h+='<div style="font-size:10.5px;font-weight:700;opacity:.6;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px">📅 '+mLbl+'</div>';
   h+='<div style="display:flex;gap:7px">';
-  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1">'+myMonth.length+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Este mês</div></div>';
-  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1;color:#6ee7b7">'+activeAll+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Ativos</div></div>';
-  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1">'+done+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Conc.</div></div>';
+  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1">'+(isG()?ST.shifts.filter(function(x){return x.date.slice(0,7)===curMonth;}).length:myMonth.length)+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">'+(isG()?'Plantões no mês':'Meus no mês')+'</div></div>';
+  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1;color:#6ee7b7">'+activeAll+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Ativos agora</div></div>';
+  h+='<div style="flex:1;background:rgba(16,185,129,.08);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 6px;text-align:center"><div style="font-size:22px;font-weight:800;font-family:Montserrat,sans-serif;line-height:1">'+(isG()?ST.exchanges.filter(function(e){return e.status==='pending';}).length:done)+'</div><div style="font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">'+(isG()?'Trocas a aprovar':'Concluídos')+'</div></div>';
   h+='</div></div>';
 
   // ── SHEET ──
   h+='<div style="background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:11px">';
 
   // ── CARD SLIDE ──
+  var hSv1=h;h='';
   if(active){
     var isDA=(active.type==='D'||active.type==='d');
     h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">';
@@ -2918,16 +2928,22 @@ function pgDash(){
       h+='<span style="font-size:10px;font-weight:800;color:var(--tl);letter-spacing:.8px;background:rgba(52,211,153,.1);padding:3px 9px;border-radius:20px">📅 '+diasTxt+'</span>';
       h+='</div>';
     }
-    h+='<div class="slide-wrap" id="SL_START" data-id="'+nx.id+'">';
-    h+='<div class="slide-track"></div><div class="slide-thumb">▶</div>';
-    h+='<div class="slide-hint">'+(isToday?'Deslize para iniciar':'Toque para ver detalhes')+'</div>';
-    h+='<div class="slide-done">✅ '+(isToday?'Iniciando...':'Abrindo...')+'</div></div>';
+    if(isToday){
+      h+='<div class="slide-wrap" id="SL_START" data-id="'+nx.id+'">';
+      h+='<div class="slide-track"></div><div class="slide-thumb">▶</div>';
+      h+='<div class="slide-hint">Deslize para iniciar</div>';
+      h+='<div class="slide-done">✅ Iniciando...</div></div>';
+    }else{
+      h+='<button class="btn bgh" style="width:100%" onclick="modalStart(\''+nx.id+'\')">Ver detalhes do plantão</button>';
+    }
     h+='</div>';
   }
 
-  h+=dashActions();
+  var sCard=h;h=hSv1;
+  var sAct=dashActions();
 
   // ── PRÓXIMOS PLANTÕES ──
+  var hSv2=h;h='';
   h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden;display:block">';
   h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 13px 10px;border-bottom:1px solid var(--bd);background:rgba(16,185,129,.08)">';
   h+='<div style="display:flex;align-items:center;gap:7px">';
@@ -2957,7 +2973,9 @@ function pgDash(){
   }
   h+='</div>';
 
+  var sProx=h;h=hSv2;
   // ── PAINEL GESTOR ──
+  var hSv3=h;h='';
   if(isG()){
     var curMonthG=curMonth;
     var mLblG=mLbl;
@@ -2982,6 +3000,9 @@ function pgDash(){
     h+='</div></div>';
   }
 
+  var sPan=h;h=hSv3;
+  if(isG())h+=(active?sCard:'')+sAct+sPan+(ups.length?sProx:'');
+  else h+=sCard+sAct+sProx;
   h+='<div style="height:72px"></div></div></div>';
   G('CONT').innerHTML=h;
   if(active){
@@ -3028,7 +3049,8 @@ function dashActions(){
     if(mp)row('⏳','Sua solicitação aguarda aprovação','',"goTo('exchanges')");
     var tm=new Date(tdStr()+'T12:00:00');tm.setDate(tm.getDate()+1);var tStr=dayStr(tm);
     var tsh=ST.shifts.find(function(x){return x.docId===CU.id&&x.date===tStr&&x.status==='open';});
-    if(tsh)row('🔔','Você tem plantão amanhã',sLbl(tsh.type)+' · '+sTime(tsh.type),"goTo('myshifts')");
+    var nxt=ST.shifts.filter(function(x){return x.docId===CU.id&&x.date>=tdStr()&&!plantaoEncerrado(x)&&x.status!=='active';}).sort(function(a,b){return a.date.localeCompare(b.date);})[0];
+    if(tsh&&!(nxt&&nxt.date===tStr))row('🔔','Você tem plantão amanhã',sLbl(tsh.type)+' · '+sTime(tsh.type),"goTo('myshifts')");
   }
   if(!rows.length)return'<div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:13px 14px;font-size:13px;color:var(--tx2)">✅ Nada pendente por enquanto.</div>';
   return'<div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden;display:block"><div style="display:flex;align-items:center;gap:7px;padding:11px 13px 10px;background:rgba(245,158,11,.08)"><div style="width:24px;height:24px;border-radius:7px;background:rgba(245,158,11,.16);display:flex;align-items:center;justify-content:center;font-size:12px">⚡</div><div style="font-size:11px;font-weight:800;color:#d97706;letter-spacing:.7px;text-transform:uppercase">Precisa de atenção</div></div>'+rows.join('')+'</div>';
@@ -3055,20 +3077,20 @@ function pgCal(){
   h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
   h+='<div><h2 style="font-size:22px;font-weight:800;color:var(--tx)">📅 Escala</h2>';
   h+='<p style="font-size:12px;color:var(--tx3);margin-top:2px">';
-  h+=(calF==='all'?allMonth.length+' plantões':calF==='mine'?mineMonth.length+' meus plantões':mineMonth.length+' plantões de '+dSN(calF))+' · '+mCap;
+  h+=(calF==='all'?allMonth.length+' plantões':calF==='mine'?mineMonth.length+' meus plantões':mineMonth.length+' plantões de '+dSN(calF))+'';
   h+='</p></div>';
   h+='<button class="btn bgh sm" onclick="shareSchedule()">📤</button></div>';
   var hasMine=ST.shifts.some(function(x){return x.docId===CU.id;});
-  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 10px"><button class="btn bgh sm" onclick="calToday()">📍 Hoje</button>'+(hasMine?'<button class="btn bgh sm" onclick="calGoMine()">⭐ Meu próximo plantão</button>':'')+'</div>';
   var selSt='flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--bd);border-radius:9px;font-size:14px;background:var(--sf);color:var(--tx)';
-  var fOpts=isG()?'<option value="all">👥 Todos os médicos</option><option value="mine">⭐ Só os meus</option>'+ST.docs.filter(function(d){return d.role!=='gestor';}).slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(d){return'<option value="'+d.id+'">'+d.name.replace(/^(Dr\.|Dra\.)\s*/i,'')+'</option>';}).join(''):'<option value="mine">⭐ Só os meus</option><option value="all">👥 Todos os plantões</option>';
+  var segBtn=function(v,lbl){var on=calF===v;return'<button onclick="calSetF(\''+v+'\')" style="flex:1;padding:9px 6px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:'+(on?'var(--bl)':'transparent')+';color:'+(on?'#fff':'var(--tx2)')+'">'+lbl+'</button>';};
+  h+='<div style="display:flex;gap:4px;padding:4px;background:var(--sf2);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px">'+segBtn('all','👥 Todos')+segBtn('mine','⭐ Só os meus')+'</div>';
+  var docOpts=isG()?'<option value="">🔎 Filtrar por médico…</option>'+ST.docs.filter(function(d){return d.role!=='gestor';}).slice().sort(function(x,y2){return x.name.localeCompare(y2.name);}).map(function(d){return'<option value="'+d.id+'"'+(calF===d.id?' selected':'')+'>'+d.name.replace(/^(Dr\.|Dra\.)\s*/i,'')+'</option>';}).join(''):'';
   var mset={};ST.shifts.forEach(function(x){mset[x.date.slice(0,7)]=1;});mset[tdStr().slice(0,7)]=1;mset[mStr]=1;
   var jOpts=Object.keys(mset).sort().map(function(k){return'<option value="'+k+'"'+(k===mStr?' selected':'')+'>'+MESES_LBL[+k.slice(5,7)-1]+' '+k.slice(0,4)+'</option>';}).join('');
-  h+='<div style="display:flex;gap:8px;margin-bottom:12px"><select aria-label="Filtrar por médico" onchange="calSetF(this.value)" style="'+selSt+'">'+fOpts.replace('value="'+calF+'"','value="'+calF+'" selected')+'</select><select aria-label="Ir para o mês" onchange="calJump(this.value)" style="'+selSt+'">'+jOpts+'</select></div>';
+  h+='<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center"><button class="btn bgh sm" onclick="calToday()">📍 Hoje</button>'+(hasMine?'<button class="btn bgh sm" onclick="calGoMine()">⭐ Meu próximo</button>':'')+(isG()?'<select aria-label="Filtrar por médico" onchange="calSetF(this.value)" style="'+selSt+'">'+docOpts+'</select>':'')+'</div>';
   h+='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(16,185,129,.08)">';
   h+='<button class="btn bgh sm" onclick="calPrev()" style="padding:7px 14px">‹</button>';
-  h+='<div style="text-align:center"><div style="font-size:17px;font-weight:800;color:var(--tx);text-transform:capitalize">'+calMonth.toLocaleDateString('pt-BR',{month:'long'})+'</div>';
-  h+='<div style="font-size:12px;color:var(--tx3)">'+y+'</div></div>';
+  h+='<div style="text-align:center"><select aria-label="Ir para o mês" onchange="calJump(this.value)" style="background:transparent;border:none;color:var(--tx);font-size:17px;font-weight:800;text-align:center;text-align-last:center;font-family:inherit;cursor:pointer;max-width:200px">'+jOpts+'</select></div>';
   h+='<button class="btn bgh sm" onclick="calNext()" style="padding:7px 14px">›</button></div>';
   h+='<div style="padding:10px 8px 12px">';
   h+='<div class="cal-grid" style="margin-bottom:6px">'+['D','S','T','Q','Q','S','S'].map(function(d){return'<div class="cdh">'+d+'</div>';}).join('')+'</div>';
@@ -3095,11 +3117,11 @@ function pgCal(){
       h+='<div style="width:5px;height:5px;border-radius:50%;background:rgba(16,185,129,.1);margin-top:2px"></div>';
     }
     // Badge lotação — conta todos os plantões do dia
-    var totalDia=allMonth.filter(function(s){return s.date===dStr;}).length;
-    if(totalDia>=4){
-      h+='<div style="font-size:10px;font-weight:800;color:var(--rs);text-align:center;margin-top:1px;line-height:1">CHEIO</div>';
-    } else if(totalDia>0&&isG()){
-      h+='<div style="font-size:10px;color:var(--tx3);text-align:center;margin-top:1px;line-height:1">'+totalDia+'/4</div>';
+    var diaSh=allMonth.filter(function(x){return x.date===dStr;});
+    if(diaSh.length){
+      var nDia=diaSh.filter(function(x){return shiftPeriod(x.type)==='D';}).length,nNoi=diaSh.length-nDia;
+      var vagas=Math.max(0,2-nDia)+Math.max(0,2-nNoi);
+      if(vagas)h+='<div style="font-size:10px;font-weight:800;color:var(--gd);text-align:center;margin-top:1px;line-height:1">'+vagas+(vagas>1?' vagas':' vaga')+'</div>';
     }
     h+='</div>';
   }
@@ -3110,6 +3132,7 @@ function pgCal(){
   [['D','#f8b400','Diurno'],['N','#10b981','Noturno'],['d','#ff8c42','Extra D'],['n','#b197fc','Extra N'],['acts','#00d4a8','Ativo']].forEach(function(x){
     h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:'+x[1]+'"></div><span style="font-size:12px;color:var(--tx2)">'+x[2]+'</span></div>';
   });
+  h+='<div style="display:flex;align-items:center;gap:5px"><span style="font-size:11px;font-weight:800;color:var(--gd)">1 vaga</span><span style="font-size:12px;color:var(--tx2)">Turno a preencher</span></div>';
   if(!isG())h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:5px;height:5px;border-radius:50%;background:rgba(16,185,129,.15)"></div><span style="font-size:12px;color:var(--tx3)">Outros</span></div>';
   h+='</div></div>';
   h+='</div>';

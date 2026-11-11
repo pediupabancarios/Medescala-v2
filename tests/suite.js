@@ -261,6 +261,47 @@ function SUITE(h){
     eq(chamadas()[1],{exch_id:ex.id,event:'cancelled'});
   });
 
+  /* ───────── Visual e navegação ───────── */
+  async function appData(user,shifts,exchanges){
+    var A=await newApp();var S=makeServer({data:{docs:DOCS3,exchanges:exchanges||[]},shifts:shifts});A.fetch=S.fetch;A.CU=user;
+    h.mockDate(A,'2026-11-11T15:00:00Z');await A.doSync(true);
+    A.G('LS').classList.remove('on');A.G('APP').style.display='block';
+    return A;
+  }
+  test('calendário: mostra só "N vaga(s)" onde falta gente, sem "CHEIO" em todo dia; filtro em duas opções',async function(){
+    var sh=[shift('v1','2026-11-12','D','m1'),shift('v2','2026-11-12','D','m2'),shift('v3','2026-11-12','N','m1'),   // 1 vaga (falta 1 noturno)
+            shift('v4','2026-11-13','D','m1'),shift('v5','2026-11-13','D','m2'),shift('v6','2026-11-13','N','m1'),shift('v7','2026-11-13','N','m2')];  // cheio
+    var A=await appData(DOCS3[1],sh);A.goTo('calendar');await sleep(200);
+    var t=A.G('CONT').textContent;
+    ok(!/CHEIO/.test(t),'não deve mais escrever CHEIO em cada dia');
+    var c12=A.document.querySelector('.cd[data-d="2026-11-12"]').textContent,c13=A.document.querySelector('.cd[data-d="2026-11-13"]').textContent;
+    ok(/1 vaga/.test(c12),'dia 12 tem 1 vaga: '+c12);ok(!/vaga/.test(c13),'dia 13 está completo: '+c13);
+    ok(/Todos/.test(t)&&/Só os meus/.test(t),'controle Todos | Só os meus');
+    ok(!A.G('CONT').querySelector('select[aria-label="Filtrar por médico"]'),'médico não vê filtro por médico');
+    var g=await appData(DOCS3[0],sh);g.goTo('calendar');await sleep(200);
+    ok(g.G('CONT').querySelector('select[aria-label="Filtrar por médico"]'),'gestor filtra por médico');
+  });
+  test('início: rótulos claros, gestor vê atenção+painel antes dos próprios plantões, sem aviso repetido',async function(){
+    var sh=[shift('i1','2026-11-12','N','m1')];   // amanhã
+    var A=await appData(DOCS3[1],sh);A.goTo('dashboard');await sleep(200);
+    var t=A.G('CONT').textContent;
+    ok(/Meus no mês/.test(t)&&/Ativos agora/.test(t)&&/Concluídos/.test(t),'rótulos dos contadores');
+    ok(!/Toque para ver detalhes/.test(t),'texto antigo do "slide"');ok(/Ver detalhes do plantão/.test(t),'botão claro');
+    ok(!/Você tem plantão amanhã/.test(t),'o card do próximo plantão já diz AMANHÃ');
+    var ex=[{id:'p1',type:'exchange',fromDocId:'m1',fromShiftId:'i1',toDocId:'m2',toShiftId:'i1',status:'pending',createdAt:Date.now()}];
+    var g=await appData(DOCS3[0],sh,ex);g.goTo('dashboard');await sleep(200);
+    var tg=g.G('CONT').textContent;
+    var L=tg.toLowerCase(),iAt=L.indexOf('precisa de atenção'),iPa=L.indexOf('painel do gestor'),iPr=L.indexOf('próximos plantões');
+    ok(iAt>=0&&iPa>=0&&iAt<iPa,'atenção antes do painel');
+    ok(/Trocas a aprovar/.test(tg),'contador de trocas a aprovar para o gestor');
+    ok(iPr<0||iPa<iPr,'painel antes dos plantões pessoais');
+  });
+  test('tema escuro: botões "fantasma" e campos não ficam com fundo cinza-claro',async function(){
+    var A=await appData(DOCS3[1],[shift('t1','2026-11-12','D','m1')]);A.goTo('calendar');await sleep(200);
+    var b=A.document.querySelector('.btn.bgh'),cs=A.getComputedStyle(b).backgroundColor,m=cs.match(/[\d.]+/g).map(Number);
+    ok(!(m[0]>200&&m[1]>200&&m[2]>200),'botão fantasma com fundo claro no tema escuro: '+cs);
+  });
+
   /* ───────── Banco de horas ───────── */
   test('banco de horas conta plantões que já passaram mesmo "abertos" (meses importados da planilha)',async function(){
     var sh=[shift('h1','2026-10-01','D','m1'),shift('h2','2026-10-02','N','m1'),shift('h3','2026-10-03','D','m1','closed'),shift('h4','2030-12-01','D','m1'),shift('h5','2026-11-11','N','m1')];
