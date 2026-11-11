@@ -261,6 +261,71 @@ function SUITE(h){
     eq(chamadas()[1],{exch_id:ex.id,event:'cancelled'});
   });
 
+  /* ───────── Trocas e repasses: nunca duplicar médico no turno ───────── */
+  test('repasse: não deixa assumir plantão desatualizado, o próprio, nem em turno em que já trabalha',async function(){
+    var sh=[shift('r1','2030-12-10','D','m1'),shift('r2','2030-12-11','D','m2'),shift('r3','2030-12-10','d','m2'),shift('r4','2030-12-12','N','m1')];
+    var ex=[{id:'x1',type:'passover',fromDocId:'m1',fromShiftId:'r1',toDocId:null,status:'open',createdAt:Date.now()},
+            {id:'x2',type:'passover',fromDocId:'m1',fromShiftId:'r4',toDocId:null,status:'open',createdAt:Date.now()}];
+    var c=await appComo(DOCS3[2],{data:{docs:DOCS3,exchanges:ex},shifts:sh});await c.A.doSync(true);
+    c.A.doClaim('x1');await sleep(150);
+    eq(c.A.ST.shifts.find(function(s){return s.id==='r1';}).docId,'m1','m2 já faz o diurno do dia 10 (r3, extra): não pode assumir r1');
+    c.A.ST.shifts.find(function(s){return s.id==='r4';}).docId='g1';
+    c.A.doClaim('x2');await sleep(150);
+    eq(c.A.ST.shifts.find(function(s){return s.id==='r4';}).docId,'g1','repasse desatualizado não pode ser assumido');
+    var c2=await appComo(DOCS3[1],{data:{docs:DOCS3,exchanges:ex},shifts:sh});await c2.A.doSync(true);
+    c2.A.doClaim('x1');await sleep(150);
+    eq(c2.A.ST.shifts.find(function(s){return s.id==='r1';}).docId,'m1','não pode assumir o próprio repasse');
+  });
+  test('troca: recusa quando o plantão mudou de dono ou quando um médico ficaria 2x no mesmo turno',async function(){
+    var sh=[shift('t1','2030-12-10','D','m1'),shift('t2','2030-12-15','N','m2'),shift('t3','2030-12-15','n','m1'),shift('t4','2030-12-20','D','m2')];
+    var c=await appComo(DOCS3[1],{data:{docs:DOCS3,exchanges:[]},shifts:sh});await c.A.doSync(true);
+    function troca(f,d,t){c.A.modalExch(f);c.A.G('EXMY').value=f;c.A.G('EXDOC').value=d;c.A.loadThS();c.A.G('EXTH').value=t;ok(c.A.G('EXTH').value===t,'plantão '+t+' não está na lista da tela');c.A.doExch();}
+    function dono(id){return c.A.ST.shifts.find(function(s){return s.id===id;}).docId;}
+    troca('t1','m2','t2');await sleep(200);
+    eq([dono('t1'),dono('t2')],['m1','m2'],'m1 já faz a noite do dia 15 (t3): trocar por t2 duplicaria');
+    eq(c.A.ST.exchanges.length,0);
+    troca('t1','m2','t4');await sleep(300);
+    eq([dono('t1'),dono('t4')],['m2','m1'],'troca válida tem que funcionar');
+    eq(c.A.ST.exchanges.length,1);
+  });
+
+  /* ───────── Segurança: texto digitado e senhas ───────── */
+  test('[segurança] texto com HTML (chat, avisos, observações...) aparece como texto e não vira código',async function(){
+    var evil='<img src=x id="XSS_PROBE" onerror="window.__xss=1">';
+    var docs=DOCS3.concat([doc('m3','Dra. D"Ávila <b>Teste</b>','12345')]);docs[1].customPass='Se"gredo<9';
+    var s1=shift('a1','2026-11-12','D','m1');s1.obs=evil;s1.passagem={resumo:evil};
+    var data={docs:docs,exchanges:[{id:'e1',type:'passover',fromDocId:'m1',fromShiftId:'a1',toDocId:null,reason:evil,status:'open',createdAt:Date.now()}],
+      msgs:[{id:'c1',docId:'m1',text:evil,ts:Date.now()}],avisos:[{id:'v1',title:evil,text:evil,ts:Date.now(),by:'g1'}],
+      ocorrencias:[{id:'o1',docId:'m1',type:'other',desc:evil,ts:Date.now()}],notifs:[{id:'n1',msg:evil,ts:Date.now(),readBy:[]}],log:[{id:'l1',ts:Date.now(),msg:evil}]};
+    var erros=[];
+    for(var u of [DOCS3[0],DOCS3[1]]){
+      var c=await appComo(u,{data:data,shifts:[s1]});await c.A.doSync(true);
+      c.A.eval('Object.keys(PG_MAP)').forEach(function(pg){
+        try{c.A.curPg=pg;c.A.eval('PG_MAP["'+pg+'"]()');}catch(e){erros.push(pg+': '+e.message);}
+        if(c.A.document.getElementById('XSS_PROBE'))erros.push(u.role+' '+pg+' interpretou HTML');
+      });
+      if(u.role==='gestor')eq(c.A.ST.docs.find(function(d){return d.id==='m1';}).customPass,'Se"gredo<9','a senha não pode ser alterada pela limpeza');
+    }
+    eq(erros,[]);
+    // o que o próprio usuário digita agora também é neutralizado antes de gravar
+    var c2=await appComo(DOCS3[1],{data:{docs:DOCS3,msgs:[]},shifts:[]});await c2.A.doSync(true);
+    c2.A.ST.msgs.push({id:'c9',docId:'m1',text:'FC <100 e "ok"',ts:1});await c2.A.save('msgs');
+    eq(c2.S.data.msgs[0].text,'FC &lt;100 e &quot;ok&quot;');
+  });
+  test('[segurança] senha: quem tem senha própria não entra mais com o CRM; sem senha própria vale o CRM',async function(){
+    var docs=DOCS3.map(function(d){return Object.assign({},d);});docs[1].customPass='Segredo9';
+    var A=await newApp();
+    eq(A.senhaPropria(docs[1]),'Segredo9');eq(A.senhaPropria(docs[2]),'','sem senha própria');
+    var c=await appComo(null,{data:{docs:docs},shifts:[]});await c.A.doSync(true);
+    function tenta(login,senha){c.A.CU=null;c.A.G('LIU').value=login;c.A.G('LIP').value=senha;try{c.A.doLogin();}catch(e){}return c.A.CU&&c.A.CU.id;}
+    ok(!tenta('m1','19099'),'CRM não pode abrir conta que tem senha própria');
+    eq(tenta('m1','Segredo9'),'m1');
+    eq(tenta('m2','13969'),'m2');
+    // senha definida pelo gestor (pass+senha+customPass iguais) e senha igual ao CRM = padrão
+    eq(A.senhaPropria({crm:'111',pass:'111',senha:'111'}),'');
+    eq(A.senhaPropria({crm:'111',pass:'abc12',senha:'abc12',customPass:'abc12'}),'abc12');
+  });
+
   /* ───────── Todas as telas abrem sem erro ───────── */
   async function varrer(user){
     var c=await appComo(user,{data:{docs:DOCS3},shifts:many(2,'2026-10-10','D').concat(many(2,'2026-10-10','N'),many(1,'2026-10-11','D','m2'))});

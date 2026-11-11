@@ -8,9 +8,14 @@ const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 const json = (o: unknown, st = 200) => new Response(JSON.stringify(o), { status: st, headers: { ...CORS, "Content-Type": "application/json" } });
 const APP = "https://pediupabancarios.github.io/Medescala-v2/";
 
+// uma única consulta traz todos os segredos (antes eram 3-4 idas ao banco por chamada) e fica em memória enquanto a função estiver "quente"
+let segredos: Record<string, string> | null = null;
 async function secret(name: string) {
-  const { data } = await sb.from("medescala_secrets").select("value").eq("name", name).maybeSingle();
-  return data?.value as string | undefined;
+  if (!segredos) {
+    const { data } = await sb.from("medescala_secrets").select("name,value");
+    segredos = Object.fromEntries((data || []).map((r: any) => [r.name, r.value]));
+  }
+  return segredos[name] as string | undefined;
 }
 // as chaves VAPID são criadas aqui na primeira chamada e nunca saem do banco (só a pública é devolvida)
 async function vapid() {
@@ -18,6 +23,7 @@ async function vapid() {
   if (!pub || !priv) {
     const k = webpush.generateVAPIDKeys();
     await sb.from("medescala_secrets").upsert([{ name: "vapid_public", value: k.publicKey }, { name: "vapid_private", value: k.privateKey }], { onConflict: "name", ignoreDuplicates: true });
+    segredos = null;
     pub = await secret("vapid_public"); priv = await secret("vapid_private");
   }
   webpush.setVapidDetails(APP, pub!, priv!);

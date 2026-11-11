@@ -65,5 +65,6 @@ select cron.schedule('medescala-lembretes', '*/5 9,21 * * *', $job$
   select net.http_post(
     url := 'https://ovkfrtozsyorosjymwoi.supabase.co/functions/v1/send-shift-reminders',
     headers := jsonb_build_object('Content-Type','application/json','x-cron-secret',(select value from public.medescala_secrets where name='cron_secret')),
-    body := '{"mode":"cron"}'::jsonb)
+    body := '{"mode":"cron"}'::jsonb,
+    timeout_milliseconds := 30000)
 $job$);
