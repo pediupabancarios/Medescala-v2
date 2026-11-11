@@ -2,7 +2,7 @@
    1) Offline: tenta a rede primeiro (deploys novos aparecem na hora) e cai no cache se estiver sem internet.
    2) Notificações: recebe os lembretes de plantão enviados pelo servidor (Web Push), mesmo com o app fechado.
    Subir a versão C força limpar o cache antigo. Só intercepta arquivos do próprio site — o Supabase não passa por aqui. */
-const C = 'mes-sw-v1';
+const C = 'mes-sw-v2';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon.svg', 'icon-192.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
