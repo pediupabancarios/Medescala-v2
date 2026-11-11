@@ -261,6 +261,18 @@ function SUITE(h){
     eq(chamadas()[1],{exch_id:ex.id,event:'cancelled'});
   });
 
+  /* ───────── Banco de horas ───────── */
+  test('banco de horas conta plantões que já passaram mesmo "abertos" (meses importados da planilha)',async function(){
+    var sh=[shift('h1','2026-10-01','D','m1'),shift('h2','2026-10-02','N','m1'),shift('h3','2026-10-03','D','m1','closed'),shift('h4','2030-12-01','D','m1'),shift('h5','2026-11-11','N','m1')];
+    var A=await newApp();var S=makeServer({data:{docs:DOCS3},shifts:sh});A.fetch=S.fetch;A.CU=DOCS3[1];
+    h.mockDate(A,'2026-11-11T15:00:00Z');await A.doSync(true);   // 12:00 em Brasília
+    A.eval('PG_MAP.horas()');var t=A.G('CONT').textContent;
+    ok(/Horas\s*36h/.test(t),'3 plantões já encerrados = 36h, veio: '+t.slice(0,120));
+    ok(/A Trabalhar\s*24h/.test(t),'o de 2030 e o noturno de hoje ainda não terminaram = 24h, veio: '+t.slice(0,160));
+    eq(A.plantaoEncerrado(shift('z','2026-11-11','D','m1')),false,'diurno de hoje termina às 19h');
+    eq(A.plantaoEncerrado(shift('z','2026-11-10','N','m1')),true,'noturno de ontem terminou hoje às 07h');
+  });
+
   /* ───────── Trocas e repasses: nunca duplicar médico no turno ───────── */
   test('repasse: não deixa assumir plantão desatualizado, o próprio, nem em turno em que já trabalha',async function(){
     var sh=[shift('r1','2030-12-10','D','m1'),shift('r2','2030-12-11','D','m2'),shift('r3','2030-12-10','d','m2'),shift('r4','2030-12-12','N','m1')];
