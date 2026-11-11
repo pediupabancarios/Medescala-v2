@@ -61,6 +61,17 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   let b: any = {}; try { b = await req.json(); } catch (_) { /* vazio */ }
   const ev = String(b.event || ""), id = String(b.exch_id || "");
+  // Teste de envio (só com o segredo do agendador, chamado pelo banco): manda um e-mail de exemplo ao gestor
+  if (b.mode === "test") {
+    const { data: s } = await sb.from("medescala_secrets").select("value").eq("name", "cron_secret").maybeSingle();
+    if (!s?.value || s.value !== req.headers.get("x-cron-secret")) return json({ error: "nao autorizado" }, 401);
+    const gest = ((await ler("docs")) as any[]).filter((d) => d.role === "gestor" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email || "")).map((d) => d.email);
+    if (!gest.length) return json({ skipped: "gestor sem e-mail" });
+    try {
+      const ok = await enviar(gest, "✅ MedEscala: teste do aviso por e-mail", "<div style=\"font-family:Arial,sans-serif\"><h2 style=\"color:#047857\">Aviso por e-mail funcionando</h2><p>Você vai receber um e-mail como este a cada troca ou repasse concluído.</p></div>");
+      return json(ok ? { sent: gest.length } : { skipped: "provedor de e-mail não configurado" });
+    } catch (err) { return json({ error: String((err as Error).message || err).slice(0, 200) }, 500); }
+  }
   if (!(ev in STATUS_DO_EVENTO) || !id) return json({ error: "pedido inválido" }, 400);
 
   const [exchs, docs] = await Promise.all([ler("exchanges"), ler("docs")]);
