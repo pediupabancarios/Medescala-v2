@@ -167,7 +167,7 @@ button,input,select,textarea{font-family:'Roboto',sans-serif}
 .bni .ic{font-size:20px;line-height:1;transition:transform .2s}
 .bni.active{color:var(--bl)}.bni.active .ic{transform:none;filter:drop-shadow(0 0 4px rgba(16,185,129,.4))}.bni.active::after{display:none}.bni-pill{width:42px;height:30px;border-radius:20px;display:flex;align-items:center;justify-content:center;transition:background .2s}.bni.active .bni-pill{background:rgba(16,185,129,.13)}
 .bni span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;text-align:center}
-.page{animation:fi .2s ease;width:100%;display:block}
+.page{width:100%;display:block}
 @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .ph{margin-bottom:20px}
 .ph h2{font-family:'Montserrat',sans-serif;font-size:23px;font-weight:800;letter-spacing:-.4px;background:linear-gradient(135deg,var(--tx),var(--tx2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -1065,7 +1065,7 @@ tr:hover td{background:rgba(16,185,129,.04)!important}
 .skel-stat{height:70px;border-radius:12px;margin-bottom:8px;}
 
 /* ══ PAGE TRANSITIONS ══ */
-.page{animation:pgIn .22s cubic-bezier(.4,0,.2,1);width:100%;display:block}
+.page{width:100%;display:block}
 @keyframes pgIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
 .page.slide-back{animation:pgBack .22s cubic-bezier(.4,0,.2,1);}
 @keyframes pgBack{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
@@ -1617,7 +1617,7 @@ function _requestNotifPermission_OLD(){if(!('Notification' in window))return;if(
 function sendBrowserNotif(title,body){if(!NOTIF_PERM||Notification.permission!=='granted')return;try{var n=new Notification(title,{body:body||'',vibrate:[200,100,200],tag:'medescala-'+Date.now()});n.onclick=function(){window.focus();n.close();};setTimeout(function(){n.close();},8000);}catch(e){}}
 
 var realtimeWS=null;
-function connectRealtime(){if(!SURL||!SKEY)return;if(realtimeWS&&realtimeWS.readyState===1)return;try{var wsUrl=SURL.replace('https://','wss://')+'/realtime/v1/websocket?apikey='+SKEY+'&vsn=1.0.0';realtimeWS=new WebSocket(wsUrl);realtimeWS.onopen=function(){if(window._rtOpened)LAST_SHIFTS_FULL=0;window._rtOpened=true;realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_data',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_data'}]}},ref:'1'}));realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_shifts',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_shifts'}]}},ref:'2'}));setSyncUI('ok','Tempo real ⚡');};realtimeWS.onmessage=function(evt){try{var data=JSON.parse(evt.data);if(data.event==='heartbeat'){realtimeWS.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}));return;}var chg=data.payload&&data.payload.data;if(chg&&chg.table==='medescala_shifts'){applyShiftChange(chg);setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));return;}var rec=chg&&chg.record;if(rec&&rec.key&&rec.key!=='shifts'&&rec.value){try{var val=JSON.parse(rec.value);if(Array.isArray(val)||typeof val==='object'){ST[rec.key]=val;markLoaded(rec.key,val);snapAudit(rec.key,val);refreshPage();setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));}}catch(e){}}}catch(e){};};realtimeWS.onerror=function(){};realtimeWS.onclose=function(){setTimeout(function(){if(CU)connectRealtime();},5000);};}catch(e){}}
+function connectRealtime(){if(!SURL||!SKEY)return;if(realtimeWS&&realtimeWS.readyState===1)return;try{var wsUrl=SURL.replace('https://','wss://')+'/realtime/v1/websocket?apikey='+SKEY+'&vsn=1.0.0';realtimeWS=new WebSocket(wsUrl);realtimeWS.onopen=function(){if(window._rtOpened)LAST_SHIFTS_FULL=0;window._rtOpened=true;realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_data',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_data'}]}},ref:'1'}));realtimeWS.send(JSON.stringify({topic:'realtime:public:medescala_shifts',event:'phx_join',payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'*',schema:'public',table:'medescala_shifts'}]}},ref:'2'}));setSyncUI('ok','Tempo real ⚡');};realtimeWS.onmessage=function(evt){try{var data=JSON.parse(evt.data);if(data.event==='heartbeat'){realtimeWS.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'hb'}));return;}var chg=data.payload&&data.payload.data;if(chg&&chg.table==='medescala_shifts'){applyShiftChange(chg);setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));return;}var rec=chg&&chg.record;if(rec&&rec.key&&rec.key!=='shifts'&&rec.value){try{var val=JSON.parse(rec.value);if(Array.isArray(val)||typeof val==='object'){if(JSON.stringify(ST[rec.key])===JSON.stringify(val)){markLoaded(rec.key,val);return;}ST[rec.key]=val;markLoaded(rec.key,val);snapAudit(rec.key,val);refreshPage();setSyncUI('ok','⚡ '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));}}catch(e){}}}catch(e){};};realtimeWS.onerror=function(){};realtimeWS.onclose=function(){setTimeout(function(){if(CU)connectRealtime();},5000);};}catch(e){}}
 function disconnectRealtime(){if(realtimeWS){try{realtimeWS.close();}catch(e){}realtimeWS=null;}}
 
 var BIO_KEY='mes_bio';
@@ -1868,7 +1868,9 @@ function setSyncUI(state,msg){var dot=G('SDOT'),txt=G('STXT'),bar=G('SYNCBAR');i
 function syncNow(){if(SAFE_REFRESH_SKIP.indexOf(curPg)>=0){showToast('Salve os dados antes de sincronizar','err');return;}showToast('↻ Atualizando...','info');doSync(true);}
 var SYNC_VER={},LAST_SHIFTS_FULL=0;
 function sbVersions(){return fetch(SURL+'/rest/v1/medescala_data?select=key,updated_at',{method:'GET',headers:sbH()}).then(function(r){if(!r.ok)throw new Error('versoes');return r.json();}).then(function(rows){var m={};rows.forEach(function(x){m[x.key]=x.updated_at;});return m;});}
-function doSync(force){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setSyncUI('err','Banco não configurado');return Promise.resolve();}syncing=true;setSyncUI('loading','Sincronizando...');var keys=['docs','months','exchanges','notifs','log','avisos','msgs','ocorrencias'];
+/* assinatura dos dados: a sincronização só redesenha a tela quando algo realmente mudou (evita o piscar a cada 30 s) */
+function stSig(){try{return ['shifts','docs','months','exchanges','notifs','log','avisos','msgs','ocorrencias'].map(function(k){return JSON.stringify(ST[k]||null);}).join('|');}catch(e){return String(Math.random());}}
+function doSync(force){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setSyncUI('err','Banco não configurado');return Promise.resolve();}syncing=true;var sigAntes=stSig();setSyncUI('loading','Sincronizando...');var keys=['docs','months','exchanges','notifs','log','avisos','msgs','ocorrencias'];
   var full=force===true||!LOADED.docs;
   var okAny=false;
   return sbVersions().then(function(v){okAny=true;return v;}).catch(function(){return null;}).then(function(ver){
@@ -1877,7 +1879,7 @@ function doSync(force){if(syncing)return Promise.resolve();if(!SURL||!SKEY){setS
     var ps=todo.map(function(k){return sbGet(k).then(function(v){okAny=true;markLoaded(k,v);if(ver&&ver[k])SYNC_VER[k]=ver[k];if(v!==null&&v!==undefined){if(Array.isArray(v))ST[k]=v;else if(typeof v==='object')ST[k]=v;}}).catch(function(e){console.warn('Sync key failed:',k);});});
     if(shiftsDue)ps.push(sbGetShifts().then(function(arr){okAny=true;LAST_SHIFTS_FULL=Date.now();ST.shifts=arr;snapShifts(arr);markLoaded('shifts',arr);}).catch(function(e){console.warn('Sync shifts failed');}));
     return Promise.all(ps);
-  }).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});snapAuditAll();if(okAny&&LOADED.docs&&LOADED.shifts){setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));saveCache();}else setSyncUI('err','Sem conexão — dados de '+(cacheHora()||'?')+' (só leitura)');updateNBadge();updateBNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
+  }).then(function(){syncing=false;DOCS.forEach(function(seed){if(!ST.docs.find(function(d){return d.id===seed.id;}))ST.docs.push(JSON.parse(JSON.stringify(seed)));});ST.docs.forEach(function(d){if(!d.ini)d.ini=mkIni(d.name);});['shifts','exchanges','notifs','log','months','avisos','msgs','ocorrencias'].forEach(function(k){if(!ST[k])ST[k]=[];});snapAuditAll();if(okAny&&LOADED.docs&&LOADED.shifts){setSyncUI('ok','Sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));saveCache();}else setSyncUI('err','Sem conexão — dados de '+(cacheHora()||'?')+' (só leitura)');updateNBadge();updateBNBadge();if(!isG()&&CU)setTimeout(scheduleShiftReminders,500);if(CU){var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;if(force===true||stSig()!==sigAntes)refreshPage();}}).catch(function(e){syncing=false;setSyncUI('err','Sem conexão — dados locais');});}
 var LOADED={},LOADEDLEN={};
 function markLoaded(k,v){LOADED[k]=true;LOADEDLEN[k]=Array.isArray(v)?v.length:0;}
 
@@ -1912,6 +1914,7 @@ function applyShiftChange(ch){
     limpaInPlace(d);
     var i=ST.shifts.findIndex(function(x){return x.id===d.id;});
     if(i<0)ST.shifts.push(d);
+    else if(JSON.stringify(ST.shifts[i])===JSON.stringify(d)){SHIFTS_SNAP[d.id]=JSON.stringify(d);return;}
     else if(JSON.stringify(ST.shifts[i])===SHIFTS_SNAP[d.id])ST.shifts[i]=d;
     else return;
     SHIFTS_SNAP[d.id]=JSON.stringify(d);
@@ -2242,7 +2245,6 @@ function initApp(){
   connectRealtime();
   doSync().then(function(){
     var fresh=ST.docs.find(function(d){return d.id===CU.id;});if(fresh)CU=fresh;
-    refreshPage();
     if(isG()){setTimeout(checkBackupHealth,2500);backfillExchDates();}
   });
   clearInterval(syncT);syncT=setInterval(function(){if(!syncing&&SAFE_REFRESH_SKIP.indexOf(curPg)<0)doSync();},30000);
@@ -2723,7 +2725,7 @@ function goTo(pg,dir){
   var ni=G('NI-'+pg),bi=G('BNI-'+pg);
   if(ni)ni.classList.add('active');if(bi)bi.classList.add('active');else{var mi=G('BNI-mais');if(mi)mi.classList.add('active');}
   var cont=G('CONT');
-  if(cont)cont.innerHTML='<div class="page" style="padding:4px 0">'+skeletonFor(pg)+'</div>';
+  if(cont&&!(LOADED.docs&&LOADED.shifts))cont.innerHTML='<div class="page" style="padding:4px 0">'+skeletonFor(pg)+'</div>';
   clearInterval(shiftT);
   window._curPg=pg;setTimeout(function(){var c=G('CONT');if(c&&pg!=='dashboard')c.style.padding='';if(PG_MAP[pg]){PG_MAP[pg]();applyPageDir();}updateFAB();},80);
   closeSb();var np=G('NP');if(np)np.classList.remove('on');
@@ -2743,7 +2745,7 @@ G('OVL').onclick=closeSb;
 
 function showToast(msg,type){type=type||'';if(type==='err')haptic('error');var t=document.createElement('div');t.className='toast '+type;t.textContent=msg;G('TC').appendChild(t);setTimeout(function(){t.style.cssText='opacity:0;transform:scale(.9);transition:all .25s';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},260);},2800);}
 
-function applyPageDir(){requestAnimationFrame(function(){var p=document.querySelector('#CONT .page');if(p&&window._pgDir==='back'){p.style.animation='none';p.offsetHeight;p.style.animation='pgBack .22s cubic-bezier(.4,0,.2,1)';}window._pgDir=null;});}
+function applyPageDir(){requestAnimationFrame(function(){var p=document.querySelector('#CONT .page');if(p){p.style.animation=(window._pgDir==='back'?'pgBack':'pgIn')+' .22s cubic-bezier(.4,0,.2,1)';}window._pgDir=null;});}
 
 function btnLoading(btn,fn){if(!btn)return fn();btn.classList.add('loading');var orig=btn.textContent;setTimeout(function(){fn();setTimeout(function(){btn.classList.remove('loading');},400);},120);}
 

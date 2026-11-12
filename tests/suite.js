@@ -325,6 +325,15 @@ function SUITE(h){
     A.setSyncUI('err','● Sem internet');ok(A.getComputedStyle(A.G('SYNCBAR')).display!=='none','aparece quando está sem conexão');
     ok(/sync-err/.test(A.G('SYNCBTN').className));
   });
+  test('sem piscar: a sincronização só redesenha a tela quando algo mudou; a animação é só ao navegar',async function(){
+    var A=await appData(DOCS3[1],[shift('p1','2030-12-10','D','m1')]);A.goTo('calendar');await sleep(300);
+    A.document.querySelector('#CONT .page').setAttribute('data-marca','1');
+    await A.doSync();await sleep(150);
+    var pg=A.document.querySelector('#CONT .page');
+    ok(pg&&pg.getAttribute('data-marca')==='1','sync sem mudança manteve a mesma tela (não redesenhou)');
+    var css='';Array.prototype.forEach.call(A.document.styleSheets,function(x){try{Array.prototype.forEach.call(x.cssRules,function(r){if(r.selectorText==='.page')css+=r.style.animationName||'';});}catch(e){}});
+    ok(css==='','.page não anima sozinha (senão toda atualização de dados piscaria)');
+  });
   test('tema escuro: botões "fantasma" e campos não ficam com fundo cinza-claro',async function(){
     var A=await appData(DOCS3[1],[shift('t1','2026-11-12','D','m1')]);A.goTo('calendar');await sleep(200);
     var b=A.document.querySelector('.btn.bgh'),cs=A.getComputedStyle(b).backgroundColor,m=cs.match(/[\d.]+/g).map(Number);
