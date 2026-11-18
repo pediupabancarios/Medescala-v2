@@ -334,6 +334,20 @@ function SUITE(h){
     var css='';Array.prototype.forEach.call(A.document.styleSheets,function(x){try{Array.prototype.forEach.call(x.cssRules,function(r){if(r.selectorText==='.page')css+=r.style.animationName||'';});}catch(e){}});
     ok(css==='','.page não anima sozinha (senão toda atualização de dados piscaria)');
   });
+  test('encerrar plantão: médico só na última hora (diurno 18h, noturno 6h); gestor sem trava',async function(){
+    var dia=shift('e1','2030-12-10','D','m1','active'),noi=shift('e2','2030-12-10','N','m1','active');dia.startedAt=noi.startedAt=1;
+    var A=await appData(DOCS3[1],[dia,noi]);
+    var ST=A.ST,d=ST.shifts.find(function(x){return x.id==='e1';}),n=ST.shifts.find(function(x){return x.id==='e2';});
+    h.mockDate(A,'2030-12-10T17:59:00-03:00');
+    ok(!A.podeEncerrar(d),'diurno 17:59: ainda bloqueado');
+    A.modalClose('e1');await sleep(50);ok(!A.G('PSPAC'),'não abriu a passagem antes do horário');
+    A.doPassagem('e1');ok(d.status==='active','doPassagem também recusa antes do horário');
+    h.mockDate(A,'2030-12-10T18:00:00-03:00');ok(A.podeEncerrar(d),'diurno 18:00: liberado');
+    h.mockDate(A,'2030-12-11T05:59:00-03:00');ok(!A.podeEncerrar(n),'noturno 05:59: bloqueado');
+    h.mockDate(A,'2030-12-11T06:00:00-03:00');ok(A.podeEncerrar(n),'noturno 06:00: liberado');
+    h.mockDate(A,'2030-12-10T12:00:00-03:00');
+    A.CU=Object.assign({},A.CU,{role:'gestor'});ok(A.podeEncerrar(d),'gestor não tem a trava');
+  });
   test('tema escuro: botões "fantasma" e campos não ficam com fundo cinza-claro',async function(){
     var A=await appData(DOCS3[1],[shift('t1','2026-11-12','D','m1')]);A.goTo('calendar');await sleep(200);
     var b=A.document.querySelector('.btn.bgh'),cs=A.getComputedStyle(b).backgroundColor,m=cs.match(/[\d.]+/g).map(Number);
