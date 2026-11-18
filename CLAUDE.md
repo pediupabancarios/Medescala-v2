@@ -18,6 +18,7 @@ Páginas: dashboard, calendar, myshifts, board, exchanges, ms, mm, md, rep, lg, 
 
 ## Regras de negócio
 - **Máx. 2 plantonistas por turno e 4 por dia** (D/d = diurno, N/n = noturno), bloqueante: `checkDayLimit()` / `shiftPeriod()`. Todo fluxo que cria plantão deve chamá-la.
+- **Encerrar plantão (médico):** só na última hora do turno — diurno a partir das 18:00, noturno a partir das 06:00 do dia seguinte (`podeEncerrar()`/`encerraDesde()`, guardas em `modalClose`, `modalPassagem`, `doPassagem`; as telas mostram 🔒 com o horário). O gestor não tem a trava.
 - Tipos: D (07-19h), N (19-07h), d (Extra D), n (Extra N). Gestor CRM 11707 tem acesso total.
 
 ## Testes automáticos
